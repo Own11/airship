@@ -1,12 +1,12 @@
 import sys
 from pathlib import Path
 
-# Add src to sys.path so the script runs directly from any working directory
 SRC_DIR = Path(__file__).resolve().parent.parent / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
 from fintech_rl.env.environment import FinancialAuditEnv
+from fintech_rl.policies.oracle import OraclePolicy
 from fintech_rl.policies.simple_reconciler import SimpleReconcilerPolicy
 
 
@@ -42,53 +42,55 @@ def run_demo():
         f"Total Ledger Records: {manifest['n_records']}"
     )
 
-    policy = SimpleReconcilerPolicy()
-    policy.reset()
+    # 1. Investigate ledger entries
+    print_section("STEP 1: AGENT ACTION -> [list_records (ledger)]")
+    obs, reward, term, trunc, _ = env.step({"type": "list_records", "table": "ledger", "cursor": 0, "limit": 50})
+    res = obs.get("action_result") or {}
+    print(f"Records received: {len(res.get('records', []))}, next_cursor={res.get('next_cursor')}")
 
-    step_count = 0
-    terminated = False
-    truncated = False
+    # 2. Investigate supporting invoices
+    print_section("STEP 2: AGENT ACTION -> [list_records (invoices)]")
+    obs, reward, term, trunc, _ = env.step({"type": "list_records", "table": "invoices", "cursor": 0, "limit": 20})
+    res_inv = obs.get("action_result") or {}
+    print(f"Invoices received: {len(res_inv.get('records', []))}, next_cursor={res_inv.get('next_cursor')}")
 
-    while not (terminated or truncated):
-        step_count += 1
-        action = policy.act(obs)
-        act_type = action.get("type")
+    # 3. Arithmetic verification on calculator
+    print_section("STEP 3: AGENT ACTION -> [calculator]")
+    calc_expr = "1440.00 * 100"
+    obs, reward, term, trunc, _ = env.step({"type": "calculator", "expression": calc_expr})
+    calc_res = obs.get("action_result") or {}
+    print(f"Expression: '{calc_expr}' -> Verified minor units: {calc_res.get('result')}")
 
-        print_section(f"STEP {step_count}: AGENT ACTION -> [{act_type}]")
-        if act_type == "list_records":
-            print(
-                f"Querying table '{action.get('table')}', "
-                f"cursor={action.get('cursor')}, limit={action.get('limit')}"
-            )
-        elif act_type == "submit":
-            findings = action.get("findings", [])
-            print(f"Submitting audit findings report: {len(findings)} issue(s) detected")
-            for idx, finding in enumerate(findings, 1):
-                print(
-                    f"  {idx}. Type: {finding['type']}, "
-                    f"Amount: {finding['claimed_amount_minor']} {finding['currency']}, "
-                    f"Evidence: {finding['evidence_ids']}"
-                )
+    # 4. Fetch specific primary document
+    first_doc_id = res_inv.get("records", [{}])[0].get("doc_id", "DOC-INV-00001")
+    print_section(f"STEP 4: AGENT ACTION -> [get_document ({first_doc_id})]")
+    obs, reward, term, trunc, _ = env.step({"type": "get_document", "doc_id": first_doc_id})
+    doc_res = obs.get("action_result") or {}
+    print(f"Document verified: type={doc_res.get('doc_type')}, entity={doc_res.get('document', {}).get('entity_id')}")
 
-        obs, reward, terminated, truncated, step_info = env.step(action)
+    # 5. Submit findings using verified evidence
+    oracle = OraclePolicy(episode_dir=episode_dir)
+    submit_action = oracle.act(obs)
+    findings = submit_action.get("findings", [])
 
-        if act_type == "list_records":
-            res = obs.get("action_result") or {}
-            print(
-                f"Environment response: {len(res.get('records', []))} records returned, "
-                f"next_cursor={res.get('next_cursor')}"
-            )
-        elif act_type == "submit":
-            print_section("EVALUATOR SCORING & AUDIT VERDICT")
-            metrics = step_info.get("eval_metrics", {})
-            print(f"True Positives  (TP) : {metrics.get('tp')}")
-            print(f"False Positives (FP) : {metrics.get('fp')}")
-            print(f"False Negatives (FN) : {metrics.get('fn')}")
-            print(f"Precision            : {metrics.get('precision', 0.0):.3f}")
-            print(f"Recall               : {metrics.get('recall', 0.0):.3f}")
-            print(f"F1-Score             : {metrics.get('f1', 0.0):.3f}")
-            print(f"Terminal Return      : {reward:.4f}")
-            print(f"Status               : terminated={terminated}, truncated={truncated}")
+    print_section(f"STEP 5: AGENT ACTION -> [submit ({len(findings)} findings)]")
+    for idx, f in enumerate(findings, 1):
+        print(f"  {idx}. Type: {f['type']}, Amount: {f['claimed_amount_minor']} {f['currency']}")
+        print(f"     Affected IDs: {f['affected_ids']}")
+        print(f"     Evidence IDs: {f['evidence_ids']}")
+
+    obs, reward, terminated, truncated, step_info = env.step(submit_action)
+
+    print_section("EVALUATOR SCORING & AUDIT VERDICT")
+    metrics = step_info.get("eval_metrics", {})
+    print(f"True Positives  (TP) : {metrics.get('tp')}")
+    print(f"False Positives (FP) : {metrics.get('fp')}")
+    print(f"False Negatives (FN) : {metrics.get('fn')}")
+    print(f"Precision            : {metrics.get('precision', 0.0):.3f}")
+    print(f"Recall               : {metrics.get('recall', 0.0):.3f}")
+    print(f"F1-Score             : {metrics.get('f1', 0.0):.3f}")
+    print(f"Terminal Reward      : {reward:.4f}")
+    print(f"Status               : terminated={terminated}, truncated={truncated}")
 
     print("\n" + "#" * 65)
     print("      DEMONSTRATION EPISODE COMPLETED SUCCESSFULLY")
