@@ -1,21 +1,27 @@
-"""
-Интерактивное демо работы среды и агента в терминале (п. 09 регламента).
-Показывает один полный эпизод расследования:
-1. Инициализация и чтение манифеста
-2. Исследование книги (list_records)
-3. Запрос первичных документов (get_document)
-4. Расчёт расхождения на калькуляторе (calculator)
-5. Отправка отчёта (submit) и оценка
+"""Interactive step-by-step audit investigation demonstration.
+
+Demonstrates a complete audit cycle:
+1. Environment reset and manifest inspection
+2. Ledger and document exploration (list_records)
+3. Primary document fetching (get_document)
+4. Arithmetic verification (calculator)
+5. Audit report submission (submit) and terminal reward evaluation
 """
 
 import sys
-import time
 from pathlib import Path
+
+# Add src to sys.path so the script runs directly from any working directory
+SRC_DIR = Path(__file__).resolve().parent.parent / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
 from fintech_rl.env.environment import FinancialAuditEnv
 from fintech_rl.policies.simple_reconciler import SimpleReconcilerPolicy
 
 
-def print_step(title: str, text: str = ""):
+def print_section(title: str, text: str = ""):
+    """Prints a styled terminal section banner."""
     print("\n" + "=" * 65)
     print(f"  >>> {title}")
     print("=" * 65)
@@ -23,24 +29,30 @@ def print_step(title: str, text: str = ""):
         print(text)
 
 
-def main():
+def run_demo():
+    """Runs a live audit episode using the SimpleReconcilerPolicy."""
     root = Path(__file__).resolve().parent.parent
-    ep_dir = root / "episodes" / "train" / "train_ep_03"
-    if not ep_dir.exists():
-        print(f"Ошибка: эпизод {ep_dir} не найден. Запустите scripts/make_episodes.py")
+    episode_dir = root / "episodes" / "train" / "train_ep_03"
+    if not episode_dir.exists():
+        print(f"Error: episode directory not found at {episode_dir}")
+        print("Please generate episodes first: python scripts/make_episodes.py")
         sys.exit(1)
 
     print("\n" + "#" * 65)
-    print("      ДЕМОНСТРАЦИЯ RL-СРЕДЫ ФИНАНСОВОГО АУДИТА (ДЕМО)")
+    print("      FINANCIAL STATEMENT AUDITOR RL ENVIRONMENT DEMO")
     print("#" * 65)
 
-    env = FinancialAuditEnv(episode_dir=ep_dir, max_steps=10)
+    env = FinancialAuditEnv(episode_dir=episode_dir, max_steps=10)
     obs, info = env.reset()
 
-    print_step("ШАГ 0: СТАРТ ЭПИЗОДА (RESET)", f"Эпизод: {info['episode_id']}\nБюджет шагов: {info['max_steps']}")
-    print(f"Манифест компании: Базовая валюта={obs['manifest_summary']['base_currency']}, "
-          f"Период={obs['manifest_summary']['period_start'][:10]} .. {obs['manifest_summary']['period_end'][:10]}, "
-          f"Число проводок={obs['manifest_summary']['n_records']}")
+    manifest = obs["manifest_summary"]
+    print_section(
+        "STEP 0: EPISODE INITIALIZATION (RESET)",
+        f"Episode ID: {info['episode_id']}\nStep Budget: {info['max_steps']}\n"
+        f"Base Currency: {manifest['base_currency']}\n"
+        f"Reporting Period: {manifest['period_start'][:10]} to {manifest['period_end'][:10]}\n"
+        f"Total Ledger Records: {manifest['n_records']}"
+    )
 
     policy = SimpleReconcilerPolicy()
     policy.reset()
@@ -54,37 +66,46 @@ def main():
         action = policy.act(obs)
         act_type = action.get("type")
 
-        print_step(f"ШАГ {step_count}: ДЕЙСТВИЕ АГЕНТА -> [{act_type}]")
+        print_section(f"STEP {step_count}: AGENT ACTION -> [{act_type}]")
         if act_type == "list_records":
-            print(f"Запрос таблицы '{action.get('table')}', limit={action.get('limit')}, cursor={action.get('cursor')}")
+            print(
+                f"Querying table '{action.get('table')}', "
+                f"cursor={action.get('cursor')}, limit={action.get('limit')}"
+            )
         elif act_type == "submit":
             findings = action.get("findings", [])
-            print(f"Агент отправляет отчёт аудита: обнаружено выводов: {len(findings)}")
-            for idx, f in enumerate(findings, 1):
-                print(f"  {idx}. Тип: {f['type']}, Сумма: {f['claimed_amount_minor']} {f['currency']}, "
-                      f"Доказательства: {f['evidence_ids']}")
+            print(f"Submitting audit findings report: {len(findings)} issue(s) detected")
+            for idx, finding in enumerate(findings, 1):
+                print(
+                    f"  {idx}. Type: {finding['type']}, "
+                    f"Amount: {finding['claimed_amount_minor']} {finding['currency']}, "
+                    f"Evidence: {finding['evidence_ids']}"
+                )
 
         obs, reward, terminated, truncated, step_info = env.step(action)
 
         if act_type == "list_records":
             res = obs.get("action_result") or {}
-            print(f"Ответ среды: получено записей: {len(res.get('records', []))}, следующий курсор: {res.get('next_cursor')}")
+            print(
+                f"Environment response: {len(res.get('records', []))} records returned, "
+                f"next_cursor={res.get('next_cursor')}"
+            )
         elif act_type == "submit":
-            print_step("ОЦЕНКА ЭПИЗОДА ОЦЕНЩИКОМ (EVALUATOR)")
+            print_section("EVALUATOR SCORING & AUDIT VERDICT")
             metrics = step_info.get("eval_metrics", {})
             print(f"True Positives  (TP) : {metrics.get('tp')}")
             print(f"False Positives (FP) : {metrics.get('fp')}")
             print(f"False Negatives (FN) : {metrics.get('fn')}")
-            print(f"Точность (Precision) : {metrics.get('precision', 0):.3f}")
-            print(f"Полнота (Recall)     : {metrics.get('recall', 0):.3f}")
-            print(f"F1-Score             : {metrics.get('f1', 0):.3f}")
-            print(f"Итоговая награда     : {reward:.4f}")
-            print(f"Статус завершения    : terminated={terminated}, truncated={truncated}")
+            print(f"Precision            : {metrics.get('precision', 0.0):.3f}")
+            print(f"Recall               : {metrics.get('recall', 0.0):.3f}")
+            print(f"F1-Score             : {metrics.get('f1', 0.0):.3f}")
+            print(f"Terminal Return      : {reward:.4f}")
+            print(f"Status               : terminated={terminated}, truncated={truncated}")
 
     print("\n" + "#" * 65)
-    print("      ДЕМОНСТРАЦИОННЫЙ ЭПИЗОД УСПЕШНО ЗАВЕРШЁН")
+    print("      DEMONSTRATION EPISODE COMPLETED SUCCESSFULLY")
     print("#" * 65 + "\n")
 
 
 if __name__ == "__main__":
-    main()
+    run_demo()
