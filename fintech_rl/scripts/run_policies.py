@@ -102,13 +102,25 @@ def main():
                 "total_time": total_time
             })
 
-    # Print summary table
-    print("\n" + "="*80)
-    print(f"{'POLICY':<20} | {'P':<6} | {'R':<6} | {'F1':<6} | {'RETURN':<8} | {'STEPS':<6} | {'TIME (s)':<8}")
-    print("-" * 80)
+    # 1. Diagnostic metrics table (P, R, F1, Steps, Time)
+    print("\n" + "="*70)
+    print("                    ТАБЛИЦА ДИАГНОСТИКИ КАЧЕСТВА                    ")
+    print("="*70)
+    print(f"{'POLICY':<20} | {'PRECISION':<10} | {'RECALL':<8} | {'F1-SCORE':<9} | {'STEPS':<6} | {'TIME (s)':<8}")
+    print("-" * 70)
     for row in summary_results:
-        print(f"{row['policy']:<20} | {row['P']:<6.3f} | {row['R']:<6.3f} | {row['F1']:<6.3f} | {row['return']:<8.3f} | {row['avg_steps']:<6.1f} | {row['total_time']:<8.2f}")
-    print("="*80 + "\n")
+        print(f"{row['policy']:<20} | {row['P']:<10.3f} | {row['R']:<8.3f} | {row['F1']:<9.3f} | {row['avg_steps']:<6.1f} | {row['total_time']:<8.2f}")
+    print("="*70)
+
+    # 2. RL Return / Reward table (separated from diagnostics)
+    print("\n" + "="*50)
+    print("             ТАБЛИЦА НАГРАД (RL RETURN)            ")
+    print("="*50)
+    print(f"{'POLICY':<20} | {'MEAN RETURN':<12} | {'STEPS':<6}")
+    print("-" * 50)
+    for row in summary_results:
+        print(f"{row['policy']:<20} | {row['return']:<12.3f} | {row['avg_steps']:<6.1f}")
+    print("="*50 + "\n")
 
 
 if __name__ == "__main__":

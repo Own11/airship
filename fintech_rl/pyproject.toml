@@ -9,7 +9,7 @@ description = "Reproducible RL environment for financial statement auditing"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pydantic>=2.0.0",
+    "pydantic==2.10.4",
     "numpy>=1.24.0",
 ]
 

@@ -214,8 +214,9 @@ class FinancialAuditEnv:
         truncated = (self.current_step >= self.max_steps and not terminated)
         if truncated:
             self.is_truncated = True
-            # Budget exhausted without submission: reward = -1.0 if not submitted
+            # Budget exhausted without submission: reward = -1.0 if not submitted, empty result
             reward = -1.0
+            action_result = {}
             info["eval_metrics"] = {"tp": 0, "fp": 0, "fn": len(self.truth_file.issues) if self.truth_file else 0, "precision": 0.0, "recall": 0.0, "f1": 0.0, "reward": -1.0}
 
         obs = create_step_observation(

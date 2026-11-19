@@ -8,13 +8,13 @@ def compute_metrics(tp: int, fp: int, fn: int) -> Tuple[float, float, float]:
     Computes Precision, Recall, and F1.
     Edge cases:
     - If truth is empty (FN=0) and findings empty (TP=0, FP=0) -> F1 = 1.0, P = 1.0, R = 1.0
-    - If truth is empty (FN=0) but agent submitted findings (FP > 0) -> F1 = 0.0, P = 0.0, R = 1.0 (or 0.0)
+    - If truth is empty (FN=0) but agent submitted findings (FP > 0) -> F1 = 0.0, P = 0.0, R = 0.0
     - If TP == 0 -> P = 0.0, R = 0.0, F1 = 0.0
     """
     if tp == 0 and fp == 0 and fn == 0:
         return 1.0, 1.0, 1.0
     if tp == 0 and fn == 0 and fp > 0:
-        return 0.0, 1.0, 0.0
+        return 0.0, 0.0, 0.0
     
     precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
     recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0

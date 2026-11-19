@@ -1,7 +1,11 @@
 import pytest
+from pathlib import Path
 from fintech_rl.generator.company import SyntheticCompany
 from fintech_rl.generator.errors import ErrorInjector
-from fintech_rl.scoring.tolerances import convert_fx
+from fintech_rl.generator.provenance import create_provenance_file
+from fintech_rl.generator.documents import render_episode_files
+from fintech_rl.generator.validator import validate_episode_truth
+from fintech_rl.schema import TruthFile
 
 
 def test_clean_company_accounting_identity():
@@ -9,11 +13,9 @@ def test_clean_company_accounting_identity():
     company = SyntheticCompany(seed=42, episode_id="test_clean_01")
     company.generate()
 
-    # Base ledger size
     assert len(company.ledger) >= 80
     assert len(company.invoices) >= 20
 
-    # Test debit == credit per currency
     sums_by_currency = {}
     for r in company.ledger:
         sums_by_currency.setdefault(r.currency, {"debit": 0, "credit": 0})
@@ -24,54 +26,45 @@ def test_clean_company_accounting_identity():
         assert totals["debit"] == totals["credit"], f"Currency {curr} ledger debit != credit"
 
 
-def test_four_error_types_and_discrepancy():
-    """Verify injection of E1, E2, E3, E4 creates reproducible and provable discrepancies."""
-    # E1: Duplicate accounts
-    c1 = SyntheticCompany(seed=101, episode_id="test_e1")
-    c1.generate()
-    inj1 = ErrorInjector(c1, seed=101)
-    assert inj1.inject_e1_duplicate_accounts()
-    assert len(inj1.issues) == 1
-    assert inj1.issues[0].type == "duplicate_accounts"
-    assert len(inj1.issues[0].acceptable_evidence_sets) >= 1
+def test_four_error_types_and_discrepancy(tmp_path):
+    """Verify injection of E1, E2, E3, E4 and auto-validation of truth."""
+    for idx, err_type in enumerate(["E1", "E2", "E3", "E4"]):
+        ep_dir = tmp_path / f"ep_{err_type}"
+        c = SyntheticCompany(seed=300 + idx, episode_id=f"ep_{err_type}")
+        c.generate()
+        inj = ErrorInjector(c, seed=300 + idx)
+        inj.apply_errors([err_type])
+        truth = TruthFile(episode_id=f"ep_{err_type}", issues=inj.issues)
+        prov = create_provenance_file(f"ep_{err_type}", 300 + idx, inj.changes)
+        render_episode_files(c, truth, prov, ep_dir)
 
-    # E2: Partial payment
-    c2 = SyntheticCompany(seed=102, episode_id="test_e2")
-    c2.generate()
-    inj2 = ErrorInjector(c2, seed=102)
-    assert inj2.inject_e2_partial_payment()
-    assert len(inj2.issues) == 1
-    assert inj2.issues[0].type == "partial_payment"
-
-    # E3: Wrong FX rate or date
-    c3 = SyntheticCompany(seed=103, episode_id="test_e3")
-    c3.generate()
-    inj3 = ErrorInjector(c3, seed=103)
-    assert inj3.inject_e3_wrong_fx_or_date()
-    assert len(inj3.issues) == 1
-    assert inj3.issues[0].type == "wrong_fx_or_date"
-
-    # E4: Period misclassification
-    c4 = SyntheticCompany(seed=104, episode_id="test_e4")
-    c4.generate()
-    inj4 = ErrorInjector(c4, seed=104)
-    assert inj4.inject_e4_period_misclassification()
-    assert len(inj4.issues) == 1
-    assert inj4.issues[0].type == "period_misclassification"
+        # Run validator on generated files
+        errs = validate_episode_truth(ep_dir)
+        assert len(errs) == 0, f"Validator failed for {err_type}: {errs}"
 
 
-def test_interacting_scenarios():
-    """Verify interacting scenarios X1 and X2."""
-    # X1
-    cx1 = SyntheticCompany(seed=201, episode_id="test_x1")
-    cx1.generate()
-    inj_x1 = ErrorInjector(cx1, seed=201)
-    assert inj_x1.inject_x1_partial_fx_period_boundary()
-    assert len(inj_x1.issues) == 1
+def test_interacting_scenarios_validation(tmp_path):
+    """Verify interacting scenarios X1 and X2 pass auto-validation."""
+    for idx, scenario in enumerate(["X1", "X2"]):
+        ep_dir = tmp_path / f"ep_{scenario}"
+        c = SyntheticCompany(seed=400 + idx, episode_id=f"ep_{scenario}")
+        c.generate()
+        inj = ErrorInjector(c, seed=400 + idx)
+        inj.apply_errors([scenario])
+        truth = TruthFile(episode_id=f"ep_{scenario}", issues=inj.issues)
+        prov = create_provenance_file(f"ep_{scenario}", 400 + idx, inj.changes)
+        render_episode_files(c, truth, prov, ep_dir)
 
-    # X2
-    cx2 = SyntheticCompany(seed=202, episode_id="test_x2")
-    cx2.generate()
-    inj_x2 = ErrorInjector(cx2, seed=202)
-    assert inj_x2.inject_x2_duplicate_and_period()
-    assert len(inj_x2.issues) == 2
+        errs = validate_episode_truth(ep_dir)
+        assert len(errs) == 0, f"Validator failed for {scenario}: {errs}"
+
+
+def test_all_20_episodes_validated():
+    """Validates all 10 train and 10 dev episodes in episodes directory."""
+    base_dir = Path(__file__).resolve().parent.parent / "episodes"
+    all_eps = list((base_dir / "train").glob("train_ep_*")) + list((base_dir / "dev").glob("dev_ep_*"))
+    assert len(all_eps) == 20, f"Expected 20 episodes, found {len(all_eps)}"
+
+    for ep in all_eps:
+        errs = validate_episode_truth(ep)
+        assert len(errs) == 0, f"Episode {ep.name} has validation errors: {errs}"
