@@ -51,11 +51,29 @@ docker run --rm --network none airship:latest ./scripts/check.sh
 ```
 
 ### Интерактивное пошаговое демо (п. 09 регламента)
-Показ реального процесса расследования одного эпизода агентом:
+Показ реального процесса расследования одного эпизода агентом с цветным терминальным оформлением:
 ```bash
 make demo
 # или
-PYTHONPATH=src python3 scripts/demo.py
+python3 scripts/cli.py demo
+```
+
+### Терминальный интерфейс (Airship CLI & Режим "Человек-Аудитор")
+Проект оснащён автономным CLI-модулем с Unicode-таблицами, индикаторами прогресса и цветными плашками (без внешних зависимостей):
+```bash
+# Просмотр справки по всем командам CLI
+python3 scripts/cli.py --help
+
+# Интерактивный режим расследования человеком (Human Auditor Mode)
+make play
+# или
+python3 scripts/cli.py play train_ep_03
+
+# Просмотр книги проводок и инвойсов любого эпизода
+python3 scripts/cli.py inspect train_ep_03 --table ledger --limit 10
+
+# Бенчмарк 4 политик с анимированным прогресс-баром
+make benchmark
 ```
 
 ---
@@ -165,11 +183,15 @@ $$\text{Return} = \text{clip}\left(2 \cdot F1 - 1.0 - 0.002 \cdot \text{steps}, 
 ## 📜 Полезные команды Makefile
 
 ```bash
-make help          # справка по всем доступным командам
+make help          # цветная справка по всем доступным командам
 make check         # запуск полного скрипта check.sh
-make test          # запуск всех 62 тестов через pytest
+make test          # запуск всех 67 тестов через pytest
 make demo          # пошаговое терминальное демо работы аудитора
+make benchmark     # бенчмарк 4 политик на 20 эпизодах
 make episodes      # генерация 10 train + 10 dev эпизодов
+make inspect       # просмотр проводок книги и метаданных
+make play          # интерактивный режим "Человек-Аудитор"
+make cli           # просмотр меню команд Airship CLI
 make clean         # удаление всех временных файлов и кэшей
 make docker-build  # сборка контейнера python:3.11-slim
 make docker-run    # запуск проверки в контейнере без доступа к сети

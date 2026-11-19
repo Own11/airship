@@ -1,14 +1,28 @@
-.PHONY: check test demo generate episodes clean docker-build docker-run help
+.PHONY: check test demo benchmark generate episodes inspect play cli clean docker-build docker-run help
+
+# Terminal Colors for Makefile
+CYAN   := \033[38;5;45m
+GREEN  := \033[38;5;48m
+YELLOW := \033[38;5;214m
+GRAY   := \033[38;5;244m
+BOLD   := \033[1m
+RESET  := \033[0m
 
 help:
-	@echo "Airship FinTech RL Environment Commands:"
-	@echo "  make check        - Run full verification pipeline (pytest + generate + run policies)"
-	@echo "  make test         - Run 67 unit and contract tests via pytest"
-	@echo "  make demo         - Run interactive step-by-step audit episode demo"
-	@echo "  make episodes     - Re-generate 10 train and 10 dev episodes"
-	@echo "  make docker-build - Build clean Docker image (python:3.11-slim)"
-	@echo "  make docker-run   - Run check pipeline in Docker with --network none"
-	@echo "  make clean        - Remove Python bytecode and test cache files"
+	@echo ""
+	@echo "$(CYAN)$(BOLD)Airship FinTech RL Environment Commands:$(RESET)"
+	@echo "  $(GREEN)make check$(RESET)        $(GRAY)- Run full verification pipeline (pytest + generate + benchmark)$(RESET)"
+	@echo "  $(GREEN)make test$(RESET)         $(GRAY)- Run 67 unit and contract tests via pytest$(RESET)"
+	@echo "  $(GREEN)make demo$(RESET)         $(GRAY)- Run interactive step-by-step audit walkthrough$(RESET)"
+	@echo "  $(GREEN)make benchmark$(RESET)    $(GRAY)- Benchmark 4 policies across all 20 episodes$(RESET)"
+	@echo "  $(GREEN)make episodes$(RESET)     $(GRAY)- Re-generate 10 train and 10 dev episodes$(RESET)"
+	@echo "  $(GREEN)make inspect$(RESET)      $(GRAY)- Inspect sample episode ledger records and manifest$(RESET)"
+	@echo "  $(GREEN)make play$(RESET)         $(GRAY)- Launch Human Auditor interactive terminal session$(RESET)"
+	@echo "  $(GREEN)make cli$(RESET)          $(GRAY)- View Airship CLI command menu$(RESET)"
+	@echo "  $(GREEN)make docker-build$(RESET) $(GRAY)- Build clean Docker image (python:3.11-slim)$(RESET)"
+	@echo "  $(GREEN)make docker-run$(RESET)   $(GRAY)- Run check pipeline in Docker with --network none$(RESET)"
+	@echo "  $(GREEN)make clean$(RESET)        $(GRAY)- Remove Python bytecode and test cache files$(RESET)"
+	@echo ""
 
 check:
 	@./scripts/check.sh
@@ -19,8 +33,20 @@ test:
 demo:
 	@PYTHONPATH=src python3 scripts/demo.py
 
+benchmark:
+	@PYTHONPATH=src python3 scripts/run_policies.py
+
 episodes:
 	@PYTHONPATH=src python3 scripts/make_episodes.py
+
+inspect:
+	@PYTHONPATH=src python3 scripts/cli.py inspect train_ep_03 --table ledger --limit 10
+
+play:
+	@PYTHONPATH=src python3 scripts/cli.py play train_ep_03
+
+cli:
+	@PYTHONPATH=src python3 scripts/cli.py
 
 clean:
 	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
