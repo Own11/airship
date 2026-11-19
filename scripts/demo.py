@@ -1,13 +1,3 @@
-"""Interactive step-by-step audit investigation demonstration.
-
-Demonstrates a complete audit cycle:
-1. Environment reset and manifest inspection
-2. Ledger and document exploration (list_records)
-3. Primary document fetching (get_document)
-4. Arithmetic verification (calculator)
-5. Audit report submission (submit) and terminal reward evaluation
-"""
-
 import sys
 from pathlib import Path
 
@@ -21,7 +11,6 @@ from fintech_rl.policies.simple_reconciler import SimpleReconcilerPolicy
 
 
 def print_section(title: str, text: str = ""):
-    """Prints a styled terminal section banner."""
     print("\n" + "=" * 65)
     print(f"  >>> {title}")
     print("=" * 65)
@@ -30,7 +19,6 @@ def print_section(title: str, text: str = ""):
 
 
 def run_demo():
-    """Runs a live audit episode using the SimpleReconcilerPolicy."""
     root = Path(__file__).resolve().parent.parent
     episode_dir = root / "episodes" / "train" / "train_ep_03"
     if not episode_dir.exists():
