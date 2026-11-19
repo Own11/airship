@@ -1,0 +1,23 @@
+{
+  "episode_id": "train_ep_06",
+  "issues": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "period_misclassification",
+      "affected_ids": [
+        "INV-2025-1067",
+        "ROW-00257",
+        "ROW-00258"
+      ],
+      "expected_amount_minor": 1142300,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00129",
+          "ROW-00257",
+          "ROW-00258"
+        ]
+      ]
+    }
+  ]
+}

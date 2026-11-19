@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "episode_id": "dev_ep_10",
+  "base_currency": "USD",
+  "period_start": "2025-01-01T00:00:00+00:00",
+  "period_end": "2025-01-31T23:59:59+00:00",
+  "timezone": "+00:00",
+  "n_records": 304,
+  "n_documents": 141,
+  "rounding_rules": {
+    "method": "ROUND_HALF_UP",
+    "minor_unit_digits": 2
+  }
+}

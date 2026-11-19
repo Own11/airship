@@ -1,0 +1,32 @@
+{
+  "episode_id": "dev_ep_04",
+  "issues": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "duplicate_accounts",
+      "affected_ids": [
+        "ROW-00103",
+        "ROW-00104",
+        "ROW-DUP-21201",
+        "ROW-DUP-86533",
+        "INV-2025-1025"
+      ],
+      "expected_amount_minor": 590100,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "ROW-DUP-21201",
+          "ROW-DUP-86533",
+          "DOC-INV-00052"
+        ],
+        [
+          "ROW-DUP-21201",
+          "ROW-DUP-86533",
+          "ROW-00103",
+          "ROW-00104",
+          "DOC-INV-00052"
+        ]
+      ]
+    }
+  ]
+}

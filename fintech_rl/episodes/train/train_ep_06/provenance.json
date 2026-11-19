@@ -1,0 +1,32 @@
+{
+  "episode_id": "train_ep_06",
+  "seed": 106,
+  "created_at": "2025-01-31T23:59:59+00:00",
+  "changes": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "period_misclassification",
+      "affected_ids": [
+        "INV-2025-1067",
+        "ROW-00257",
+        "ROW-00258"
+      ],
+      "expected_amount_minor": 1142300,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00129",
+          "ROW-00257",
+          "ROW-00258"
+        ]
+      ],
+      "description": "Invoice INV-2025-1067 belongs to February (2025-02-05T11:00:00+00:00) but was recognized in January ledger.",
+      "before_state": {
+        "doc_date": "2025-01-25T17:43:00+00:00"
+      },
+      "after_state": {
+        "doc_date": "2025-02-05T11:00:00+00:00"
+      }
+    }
+  ]
+}

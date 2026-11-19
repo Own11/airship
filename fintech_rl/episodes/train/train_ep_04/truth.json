@@ -1,0 +1,23 @@
+{
+  "episode_id": "train_ep_04",
+  "issues": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "partial_payment",
+      "affected_ids": [
+        "PAY-2025-3002",
+        "ROW-00007",
+        "ROW-00008"
+      ],
+      "expected_amount_minor": 192666,
+      "currency": "EUR",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-PAY-00004",
+          "ROW-00007",
+          "ROW-00008"
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "episode_id": "train_ep_05",
+  "issues": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "wrong_fx_or_date",
+      "affected_ids": [
+        "INV-2025-1029",
+        "ROW-00121",
+        "ROW-00122"
+      ],
+      "expected_amount_minor": 38396,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00061",
+          "ROW-00121",
+          "ROW-00122"
+        ]
+      ]
+    }
+  ]
+}

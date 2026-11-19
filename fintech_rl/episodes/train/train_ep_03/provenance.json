@@ -1,0 +1,47 @@
+{
+  "episode_id": "train_ep_03",
+  "seed": 103,
+  "created_at": "2025-01-31T23:59:59+00:00",
+  "changes": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "duplicate_accounts",
+      "affected_ids": [
+        "ROW-00245",
+        "ROW-00246",
+        "ROW-DUP-38167",
+        "ROW-DUP-20228",
+        "INV-2025-1058"
+      ],
+      "expected_amount_minor": 144000,
+      "currency": "EUR",
+      "acceptable_evidence_sets": [
+        [
+          "ROW-DUP-38167",
+          "ROW-DUP-20228",
+          "DOC-INV-00123"
+        ],
+        [
+          "ROW-DUP-38167",
+          "ROW-DUP-20228",
+          "ROW-00245",
+          "ROW-00246",
+          "DOC-INV-00123"
+        ]
+      ],
+      "description": "Cloned ledger rows for invoice INV-2025-1058 creating duplicate accounting entry.",
+      "before_state": {
+        "rows": [
+          "ROW-00245",
+          "ROW-00246"
+        ]
+      },
+      "after_state": {
+        "added_rows": [
+          "ROW-DUP-38167",
+          "ROW-DUP-20228"
+        ]
+      }
+    }
+  ]
+}

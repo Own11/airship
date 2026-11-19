@@ -1,0 +1,41 @@
+{
+  "episode_id": "train_ep_08",
+  "issues": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "wrong_fx_or_date",
+      "affected_ids": [
+        "INV-2025-1015",
+        "ROW-00063",
+        "ROW-00064"
+      ],
+      "expected_amount_minor": 180632,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00032",
+          "ROW-00063",
+          "ROW-00064"
+        ]
+      ]
+    },
+    {
+      "issue_id": "ISSUE-0002",
+      "type": "period_misclassification",
+      "affected_ids": [
+        "INV-2025-1005",
+        "ROW-00023",
+        "ROW-00024"
+      ],
+      "expected_amount_minor": 801200,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00012",
+          "ROW-00023",
+          "ROW-00024"
+        ]
+      ]
+    }
+  ]
+}

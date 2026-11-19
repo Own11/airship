@@ -1,0 +1,32 @@
+{
+  "episode_id": "dev_ep_08",
+  "seed": 208,
+  "created_at": "2025-01-31T23:59:59+00:00",
+  "changes": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "partial_payment",
+      "affected_ids": [
+        "PAY-2025-2032",
+        "ROW-00127",
+        "ROW-00128"
+      ],
+      "expected_amount_minor": 336350,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-PAY-00064",
+          "ROW-00127",
+          "ROW-00128"
+        ]
+      ],
+      "description": "Interacting scenario X1: unallocated foreign currency payment PAY-2025-2032 near period boundary.",
+      "before_state": {
+        "full_amount": 672700
+      },
+      "after_state": {
+        "allocated": 336350
+      }
+    }
+  ]
+}

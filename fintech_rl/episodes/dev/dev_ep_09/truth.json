@@ -1,0 +1,50 @@
+{
+  "episode_id": "dev_ep_09",
+  "issues": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "duplicate_accounts",
+      "affected_ids": [
+        "ROW-00149",
+        "ROW-00150",
+        "ROW-DUP-96140",
+        "ROW-DUP-13061",
+        "INV-2025-1035"
+      ],
+      "expected_amount_minor": 114000,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "ROW-DUP-96140",
+          "ROW-DUP-13061",
+          "DOC-INV-00075"
+        ],
+        [
+          "ROW-DUP-96140",
+          "ROW-DUP-13061",
+          "ROW-00149",
+          "ROW-00150",
+          "DOC-INV-00075"
+        ]
+      ]
+    },
+    {
+      "issue_id": "ISSUE-0002",
+      "type": "period_misclassification",
+      "affected_ids": [
+        "INV-2025-1020",
+        "ROW-00087",
+        "ROW-00088"
+      ],
+      "expected_amount_minor": 86100,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00044",
+          "ROW-00087",
+          "ROW-00088"
+        ]
+      ]
+    }
+  ]
+}

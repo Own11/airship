@@ -1,0 +1,23 @@
+{
+  "episode_id": "dev_ep_07",
+  "issues": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "period_misclassification",
+      "affected_ids": [
+        "INV-2025-1034",
+        "ROW-00143",
+        "ROW-00144"
+      ],
+      "expected_amount_minor": 1290300,
+      "currency": "EUR",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00072",
+          "ROW-00143",
+          "ROW-00144"
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "episode_id": "dev_ep_05",
+  "seed": 205,
+  "created_at": "2025-01-31T23:59:59+00:00",
+  "changes": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "partial_payment",
+      "affected_ids": [
+        "PAY-2025-2060",
+        "ROW-00233",
+        "ROW-00234"
+      ],
+      "expected_amount_minor": 265266,
+      "currency": "EUR",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-PAY-00117",
+          "ROW-00233",
+          "ROW-00234"
+        ]
+      ],
+      "description": "Underallocated payment PAY-2025-2060 in ledger by 265266 EUR.",
+      "before_state": {
+        "original_amount": 795800
+      },
+      "after_state": {
+        "allocated_amount": 530534
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "episode_id": "dev_ep_06",
+  "issues": [
+    {
+      "issue_id": "ISSUE-0001",
+      "type": "wrong_fx_or_date",
+      "affected_ids": [
+        "INV-2025-1000",
+        "ROW-00001",
+        "ROW-00002"
+      ],
+      "expected_amount_minor": 97199,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00001",
+          "ROW-00001",
+          "ROW-00002"
+        ]
+      ]
+    }
+  ]
+}
