@@ -14,15 +14,37 @@ MVP воспроизводимой среды обучения с подкреп
 ## Быстрый старт
 
 ### Единая команда проверки
-Для запуска полного цикла проверки выполните скрипт:
+Для запуска полного цикла проверки выполните скрипт или команду make:
 ```bash
 ./scripts/check.sh
+# или
+make check
 ```
 Скрипт выполняет:
-1. Запуск unit/contract тестов (`pytest`).
+1. Запуск 62 unit/contract тестов (`pytest`).
 2. Генерацию 10 train и 10 dev синтетических эпизодов (`scripts/make_episodes.py`).
 3. Запуск 4 тестовых политик (`oracle`, `simple_reconciler`, `random_explorer`, `mark_all`) с записью `trajectories.jsonl`.
-4. Печать таблицы метрик (P, R, F1, Return, Steps, Time).
+4. Печать таблицы диагностики (P, R, F1, Steps, Time) и отдельной таблицы наград (Return).
+
+### Интерактивное демо (п. 09 регламента)
+Пошаговый показ расследования эпизода агентом в терминале:
+```bash
+make demo
+# или
+PYTHONPATH=src python3 scripts/demo.py
+```
+
+### Команды Makefile
+```bash
+make help          # справка по всем доступным командам
+make test          # запуск 62 тестов через pytest с PYTHONHASHSEED=0
+make check         # запуск check.sh
+make demo          # интерактивное терминальное демо
+make episodes      # генерация train/dev эпизодов
+make clean         # очистка pycache и кэшей тестов
+make docker-build  # сборка контейнера python:3.11-slim
+make docker-run    # запуск проверки в контейнере без сети (--network none)
+```
 
 ---
 
