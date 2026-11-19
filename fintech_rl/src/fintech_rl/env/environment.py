@@ -170,8 +170,11 @@ class FinancialAuditEnv:
                 invalid_structure = False
                 
                 try:
-                    for f in findings_raw:
-                        findings.append(FindingClaim.model_validate(f))
+                    report = FindingsReport(
+                        episode_id=self.manifest_data.get("episode_id", "unknown"),
+                        findings=findings_raw
+                    )
+                    findings = report.findings
                 except Exception as ex:
                     invalid_structure = True
                     action_error = f"Invalid findings structure: {str(ex)}"

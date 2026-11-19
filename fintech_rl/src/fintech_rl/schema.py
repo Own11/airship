@@ -111,21 +111,22 @@ class FindingClaim(BaseModel):
     claimed_amount_minor: int = Field(ge=0)
     currency: str
     evidence_ids: List[str]
-    explanation: str = ""
+    explanation: str = Field(default="", max_length=1000)
 
     @model_validator(mode="after")
     def validate_unique_and_sorted(self):
-        # We ensure affected_ids and evidence_ids are present
         if not self.affected_ids:
             raise ValueError("Finding must have non-empty affected_ids")
         if not self.evidence_ids:
             raise ValueError("Finding must have non-empty evidence_ids")
+        if len(self.evidence_ids) > 10:
+            raise ValueError(f"Exceeded max 10 evidence IDs (got {len(self.evidence_ids)})")
         return self
 
 
 class FindingsReport(BaseModel):
     episode_id: str
-    findings: List[FindingClaim] = Field(default_factory=list)
+    findings: List[FindingClaim] = Field(default_factory=list, max_length=30)
 
 
 class TruthIssue(BaseModel):
