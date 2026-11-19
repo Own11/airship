@@ -229,3 +229,95 @@ def test_ambiguity_resolution_deterministic(sample_issue):
     assert match_res.tp == 1
     assert match_res.fp == 1
     assert match_res.tp_matches[0][0].claimed_amount_minor == 5000
+
+
+# 12. Full correct answer with evidence is strictly better than silence on faulty books
+def test_full_correct_answer_better_than_silence_on_faulty_books(sample_issue):
+    truth = [sample_issue]
+    # Full correct finding with evidence
+    correct_finding = FindingClaim(
+        type="duplicate_accounts",
+        affected_ids=["ROW-01", "ROW-02"],
+        claimed_amount_minor=5000,
+        currency="USD",
+        evidence_ids=["DOC-01", "ROW-01"]
+    )
+    res_correct = score_episode([correct_finding], truth, inspection_steps=2)
+    # Silence (empty findings on faulty books)
+    res_silence = score_episode([], truth, inspection_steps=2)
+
+    assert res_correct["f1"] == 1.0
+    assert res_correct["reward"] > 0.99
+    assert res_silence["f1"] == 0.0
+    assert res_silence["reward"] == -1.0
+    assert res_correct["reward"] > res_silence["reward"]
+
+
+# 13. Step economy slightly differentiates equal answers
+def test_step_economy_slightly_differentiates_equal_answers(sample_issue):
+    truth = [sample_issue]
+    claim = FindingClaim(
+        type="duplicate_accounts",
+        affected_ids=["ROW-01", "ROW-02"],
+        claimed_amount_minor=5000,
+        currency="USD",
+        evidence_ids=["DOC-01", "ROW-01"]
+    )
+    # Both achieve F1 = 1.0, but one takes 2 steps and the other takes 40 steps
+    res_fast = score_episode([claim], truth, inspection_steps=2)
+    res_slow = score_episode([claim], truth, inspection_steps=40)
+
+    assert res_fast["f1"] == res_slow["f1"] == 1.0
+    assert res_fast["reward"] == pytest.approx(0.996, abs=1e-4)
+    assert res_slow["reward"] == pytest.approx(0.920, abs=1e-4)
+    # Fast is slightly better due to inspection step penalty (-0.002 * steps)
+    assert res_fast["reward"] > res_slow["reward"]
+    assert (res_fast["reward"] - res_slow["reward"]) == pytest.approx(38 * 0.002, abs=1e-4)
+
+
+# 14. Error type normalization aliases and case insensitivity
+def test_error_type_normalization_aliases(sample_issue):
+    truth = [sample_issue]
+    # Finding using alias "duplicate_invoices" in uppercase
+    claim = FindingClaim(
+        type="DUPLICATE_INVOICES",
+        affected_ids=["ROW-01", "ROW-02"],
+        claimed_amount_minor=5000,
+        currency="usd",
+        evidence_ids=["DOC-01", "ROW-01"]
+    )
+    res = score_episode([claim], truth, inspection_steps=1)
+    assert res["tp"] == 1
+    assert res["fp"] == 0
+    assert res["f1"] == 1.0
+
+
+# 15. Evaluation mode hides reward and diagnostics from agent step tuple
+def test_eval_mode_withholds_reward_and_diagnostics(tmp_path, sample_issue):
+    ep_dir = tmp_path / "ep_eval_mode"
+    c = SyntheticCompany(seed=55, episode_id="ep_eval_mode")
+    c.generate()
+    t = TruthFile(episode_id="ep_eval_mode", issues=[sample_issue])
+    p = create_provenance_file("ep_eval_mode", 55, [])
+    render_episode_files(c, t, p, ep_dir)
+
+    # In eval mode:
+    env = FinancialAuditEnv(episode_dir=ep_dir, mode="eval")
+    env.reset()
+    claim = {
+        "type": "duplicate_accounts",
+        "affected_ids": ["ROW-01", "ROW-02"],
+        "claimed_amount_minor": 5000,
+        "currency": "USD",
+        "evidence_ids": ["DOC-01", "ROW-01"]
+    }
+    obs, reward, term, trunc, info = env.step({"type": "submit", "findings": [claim]})
+
+    # Step tuple returns 0.0 reward and empty info diagnostics to agent
+    assert reward == 0.0
+    assert info.get("eval_metrics") == {}
+    assert term is True
+    # Evaluator internally preserves true reward and metrics
+    assert env.evaluator_reward > 0.99
+    assert env.evaluator_metrics["tp"] == 1
+    assert env.evaluator_metrics["f1"] == 1.0

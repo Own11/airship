@@ -27,7 +27,7 @@ def run_demo():
         sys.exit(1)
 
     print("\n" + "#" * 65)
-    print("      FINANCIAL STATEMENT AUDITOR RL ENVIRONMENT DEMO")
+    print("      AIRSHIP: FINANCIAL STATEMENT AUDITOR RL ENVIRONMENT DEMO")
     print("#" * 65)
 
     env = FinancialAuditEnv(episode_dir=episode_dir, max_steps=10)

@@ -383,3 +383,13 @@ def test_42_no_truth_leak_in_eval_metrics(shared_episode):
     assert "issue_id" not in metrics_str
     assert "acceptable_evidence_sets" not in metrics_str
     assert "provenance" not in metrics_str
+
+
+# 10. Package alias & export test
+def test_43_airship_package_api_exports():
+    import airship
+    from airship import FinancialAuditEnv as AirshipEnv, SyntheticCompany as AirshipCompany
+    assert AirshipEnv is FinancialAuditEnv
+    assert AirshipCompany is SyntheticCompany
+    assert hasattr(airship, "score_episode")
+    assert hasattr(airship, "match_findings_to_truth")

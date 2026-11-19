@@ -1,14 +1,14 @@
 <div align="center">
 
-# 🏛️ FinTech RL: Environment for Financial Statement Audit
+# 🛸 Airship: Reproducible RL Environment for Financial Statement Audit
 
-[![Tests](https://img.shields.io/badge/pytest-62%20passed-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/pytest-67%20passed-brightgreen.svg)](tests/)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg)](pyproject.toml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg)](Dockerfile)
 [![Network](https://img.shields.io/badge/network-offline%20ready-success.svg)](#ограничения-среды)
 
-**Воспроизводимая RL-среда обучения с подкреплением для ИИ-аудитора финансовой отчётности.**  
+**Airship — воспроизводимая RL-среда обучения с подкреплением для ИИ-аудитора финансовой отчётности.**  
 Среда генерирует реалистичные синтетические компании с бухгалтерскими ошибками, предоставляет изолированный интерфейс инструментов расследования (`list_records`, `get_record`, `get_document`, `calculator`, `submit`) и строго оценивает доказательную базу выводов.
 
 [Быстрый старт](#-быстрый-старт) •
@@ -34,7 +34,7 @@
 ## 🚀 Быстрый старт
 
 ### Единая команда проверки (Регламент хакатона)
-Запуск полного цикла проверки (62 теста + генерация 20 эпизодов + прогон 4 политик + вывод таблиц):
+Запуск полного цикла проверки (67 тестов + генерация 20 эпизодов + прогон 4 политик + вывод таблиц):
 ```bash
 ./scripts/check.sh
 # или через make
@@ -44,10 +44,10 @@ make check
 ### Запуск в изолированном Docker-контейнере (без сети)
 ```bash
 # Сборка образа
-docker build -t fintech-rl:latest .
+docker build -t airship:latest .
 
 # Запуск проверки с отключенной сетью
-docker run --rm --network none fintech-rl:latest ./scripts/check.sh
+docker run --rm --network none airship:latest ./scripts/check.sh
 ```
 
 ### Интерактивное пошаговое демо (п. 09 регламента)
@@ -99,8 +99,10 @@ PYTHONPATH=src python3 scripts/demo.py
 │   ├── make_episodes.py    # Генератор 10 train + 10 dev эпизодов
 │   ├── run_policies.py     # Запуск 4 политик и расчёт метрик
 │   └── demo.py             # Интерактивное пошаговое демо расследования
-├── src/fintech_rl/
-│   ├── schema.py           # Pydantic-модели с жесткой валидацией и лимитами
+├── src/
+│   ├── airship/            # Модуль пакета Airship (re-export API)
+│   └── fintech_rl/         # Ядро RL-среды и генератора
+│       ├── schema.py       # Pydantic-модели с жесткой валидацией и лимитами
 │   ├── generator/          # Генератор компаний, 4 типов ошибок и 2 сценариев
 │   │   ├── company.py      # Бизнес-цикл компании (200-2000 проводок, баланс D==C)
 │   │   ├── errors.py       # E1-E4 и X1-X2 (дубли, FX, сплиты, период)
@@ -120,9 +122,9 @@ PYTHONPATH=src python3 scripts/demo.py
 │       ├── simple_reconciler.py # Алгоритмический аудитор
 │       ├── random_explorer.py   # Случайное блуждание
 │       └── mark_all.py          # Атакующий агент
-├── tests/                  # 62 теста (100% покрытие критериев)
-│   ├── test_env_contract.py      # 42 теста контракта, лимитов и изоляции
-│   ├── test_reward_attacks.py    # 11 тестов на 9 типов атак на награду
+├── tests/                  # 67 тестов (100% покрытие критериев)
+│   ├── test_env_contract.py      # 43 теста контракта, лимитов и изоляции
+│   ├── test_reward_attacks.py    # 15 тестов на 12 типов атак и свойств награды
 │   ├── test_generator.py         # 4 теста баланса и автовалидатора
 │   ├── test_matcher.py           # 3 теста бипарте-сопоставления
 │   └── test_reproducibility.py   # 2 теста побитового детерминизма SHA-256

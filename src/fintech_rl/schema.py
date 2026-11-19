@@ -100,6 +100,36 @@ class AccountingPolicy(BaseModel):
     rounding: Literal["nearest", "truncate"] = "nearest"
 
 
+ERROR_TYPE_ALIASES = {
+    "duplicate_accounts": "duplicate_accounts",
+    "duplicate_account": "duplicate_accounts",
+    "duplicate_invoices": "duplicate_accounts",
+    "duplicate_invoice": "duplicate_accounts",
+    "duplicate_entries": "duplicate_accounts",
+    "duplicate_entry": "duplicate_accounts",
+    "duplicate": "duplicate_accounts",
+    "partial_payment": "partial_payment",
+    "partial_payments": "partial_payment",
+    "missed_payment": "partial_payment",
+    "incomplete_payment": "partial_payment",
+    "unallocated_payment": "partial_payment",
+    "wrong_fx_or_date": "wrong_fx_or_date",
+    "wrong_fx": "wrong_fx_or_date",
+    "wrong_date": "wrong_fx_or_date",
+    "fx_error": "wrong_fx_or_date",
+    "fx_conversion_error": "wrong_fx_or_date",
+    "period_misclassification": "period_misclassification",
+    "period_error": "period_misclassification",
+    "cutoff_error": "period_misclassification",
+    "period_cutoff": "period_misclassification",
+}
+
+
+def normalize_error_type(t: str) -> str:
+    cleaned = str(t).strip().lower().replace("-", "_").replace(" ", "_")
+    return ERROR_TYPE_ALIASES.get(cleaned, cleaned)
+
+
 class FindingClaim(BaseModel):
     type: Literal[
         "duplicate_accounts",
@@ -112,6 +142,13 @@ class FindingClaim(BaseModel):
     currency: str
     evidence_ids: List[str]
     explanation: str = Field(default="", max_length=1000)
+
+    @field_validator("type", mode="before")
+    @classmethod
+    def normalize_type_str(cls, v):
+        if isinstance(v, str):
+            return normalize_error_type(v)
+        return v
 
     @model_validator(mode="after")
     def validate_unique_and_sorted(self):
@@ -141,6 +178,13 @@ class TruthIssue(BaseModel):
     expected_amount_minor: int = Field(ge=0)
     currency: str
     acceptable_evidence_sets: List[List[str]]  # Any one of these sets is sufficient evidence
+
+    @field_validator("type", mode="before")
+    @classmethod
+    def normalize_type_str(cls, v):
+        if isinstance(v, str):
+            return normalize_error_type(v)
+        return v
 
     @model_validator(mode="after")
     def validate_evidence_sets(self):

@@ -18,9 +18,10 @@ class FinancialAuditEnv:
     - Truth and provenance strictly hidden from observation and error messages.
     """
 
-    def __init__(self, episode_dir: Optional[Path] = None, max_steps: int = 100):
+    def __init__(self, episode_dir: Optional[Path] = None, max_steps: int = 100, mode: str = "train"):
         self.episode_dir = Path(episode_dir) if episode_dir else None
         self.max_steps = max_steps
+        self.mode = mode  # "train" (open training) or "eval" (closed evaluation)
         self.current_step = 0
         self.is_terminated = False
         self.is_truncated = False
@@ -32,6 +33,8 @@ class FinancialAuditEnv:
 
         # Evaluator only (kept outside observation)
         self.truth_file: Optional[TruthFile] = None
+        self.evaluator_reward: float = 0.0
+        self.evaluator_metrics: Dict[str, Any] = {}
 
     def load_from_dir(self, episode_dir: Path):
         self.episode_dir = Path(episode_dir)
@@ -96,9 +99,16 @@ class FinancialAuditEnv:
         self.current_step = 0
         self.is_terminated = False
         self.is_truncated = False
+        self.evaluator_reward = 0.0
+        self.evaluator_metrics = {}
 
-        if config and "episode_dir" in config:
-            self.load_from_dir(Path(config["episode_dir"]))
+        if config:
+            if "mode" in config:
+                self.mode = config["mode"]
+            if "episode_dir" in config:
+                self.load_from_dir(Path(config["episode_dir"]))
+            elif self.episode_dir:
+                self.load_from_dir(self.episode_dir)
         elif self.episode_dir:
             self.load_from_dir(self.episode_dir)
         else:
@@ -186,20 +196,26 @@ class FinancialAuditEnv:
                         truth_issues=self.truth_file.issues,
                         inspection_steps=self.current_step
                     )
-                    if invalid_structure:
-                        reward = -1.0
-                    else:
-                        reward = score_details["reward"]
-
-                    info["eval_metrics"] = {
+                    eval_reward = -1.0 if invalid_structure else score_details["reward"]
+                    self.evaluator_reward = eval_reward
+                    self.evaluator_metrics = {
                         "tp": score_details["tp"],
                         "fp": score_details["fp"],
                         "fn": score_details["fn"],
                         "precision": score_details["precision"],
                         "recall": score_details["recall"],
                         "f1": score_details["f1"],
-                        "reward": reward
+                        "reward": eval_reward
                     }
+
+                    if self.mode == "eval":
+                        # In closed evaluation mode: reward and diagnostics remain with evaluator
+                        reward = 0.0
+                        info["eval_metrics"] = {}
+                    else:
+                        # Open training mode: terminal reward is returned to policy
+                        reward = eval_reward
+                        info["eval_metrics"] = self.evaluator_metrics
                 else:
                     reward = 0.0
 
@@ -218,9 +234,20 @@ class FinancialAuditEnv:
         if truncated:
             self.is_truncated = True
             # Budget exhausted without submission: reward = -1.0 if not submitted, empty result
-            reward = -1.0
+            eval_reward = -1.0
+            self.evaluator_reward = eval_reward
+            self.evaluator_metrics = {
+                "tp": 0, "fp": 0,
+                "fn": len(self.truth_file.issues) if self.truth_file else 0,
+                "precision": 0.0, "recall": 0.0, "f1": 0.0, "reward": -1.0
+            }
+            if self.mode == "eval":
+                reward = 0.0
+                info["eval_metrics"] = {}
+            else:
+                reward = eval_reward
+                info["eval_metrics"] = self.evaluator_metrics
             action_result = {}
-            info["eval_metrics"] = {"tp": 0, "fp": 0, "fn": len(self.truth_file.issues) if self.truth_file else 0, "precision": 0.0, "recall": 0.0, "f1": 0.0, "reward": -1.0}
 
         obs = create_step_observation(
             step=self.current_step,

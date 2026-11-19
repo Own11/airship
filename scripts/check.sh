@@ -5,7 +5,7 @@ set -e
 cd "$(dirname "$0")/.."
 
 echo "=================================================="
-echo "  Fintech RL Environment Verification Pipeline"
+echo "  Airship: FinTech RL Environment Verification"
 echo "=================================================="
 
 # Set PYTHONHASHSEED for bit-exact reproducibility across platforms

@@ -1,5 +1,5 @@
 from typing import List, Set, Tuple, Dict, Any, Optional
-from fintech_rl.schema import FindingClaim, TruthIssue, Manifest
+from fintech_rl.schema import FindingClaim, TruthIssue, Manifest, normalize_error_type
 from fintech_rl.scoring.tolerances import is_amount_within_tolerance
 
 
@@ -66,7 +66,7 @@ def match_findings_to_truth(
     for f_idx, f in enumerate(findings):
         f_affected = canonicalize_ids(f.affected_ids)
         for t_idx, t in enumerate(truth_issues):
-            if f.type != t.type:
+            if normalize_error_type(f.type) != normalize_error_type(t.type):
                 continue
             if f.currency.upper() != t.currency.upper():
                 continue
