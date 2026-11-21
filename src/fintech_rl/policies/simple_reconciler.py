@@ -39,7 +39,7 @@ class SimpleReconcilerPolicy:
                 records = action_res["records"]
                 self.ledger_rows.extend(records)
                 next_cur = action_res.get("next_cursor")
-                if next_cur is not None and next_cur < 150: # check first 150 records
+                if next_cur is not None:
                     self.cursor = next_cur
                     return {"type": "list_records", "table": "ledger", "cursor": self.cursor, "limit": 50}
                 else:
@@ -70,7 +70,7 @@ class SimpleReconcilerPolicy:
                             "affected_ids": [r1["row_id"], c1["row_id"], r2["row_id"], c2["row_id"], inv_id],
                             "claimed_amount_minor": r1["debit_minor"],
                             "currency": r1["currency"],
-                            "evidence_ids": [r2["row_id"], c2["row_id"]], # Will add doc_id once fetched
+                            "evidence_ids": [r1["row_id"], c1["row_id"], r2["row_id"], c2["row_id"]],
                             "invoice_id": inv_id
                         })
 
@@ -84,11 +84,17 @@ class SimpleReconcilerPolicy:
         if self.state == "list_invoices":
             if "records" in action_res and action_res.get("table") == "invoices":
                 invoices = action_res["records"]
-                inv_map = {inv["invoice_id"]: inv["doc_id"] for inv in invoices}
-                for f in self.detected_findings:
-                    inv_id = f.pop("invoice_id", None)
-                    if inv_id in inv_map:
-                        f["evidence_ids"].append(inv_map[inv_id])
+                self.fetched_docs.update({inv["invoice_id"]: inv for inv in invoices})
+                next_cursor = action_res.get("next_cursor")
+                if next_cursor is not None:
+                    return {"type": "list_records", "table": "invoices", "cursor": next_cursor, "limit": 50}
+                supported = []
+                for finding in self.detected_findings:
+                    inv_id = finding.pop("invoice_id", None)
+                    if inv_id in self.fetched_docs:
+                        finding["evidence_ids"].append(self.fetched_docs[inv_id]["doc_id"])
+                        supported.append(finding)
+                self.detected_findings = supported
                 self.state = "done"
                 return {"type": "submit", "findings": self.detected_findings}
             else:

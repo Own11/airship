@@ -7,66 +7,1227 @@
       "issue_id": "ISSUE-0001",
       "type": "duplicate_accounts",
       "affected_ids": [
-        "ROW-00149",
-        "ROW-00150",
-        "ROW-DUP-96140",
-        "ROW-DUP-13061",
-        "INV-2025-1035"
+        "INV-2025-1037",
+        "ROW-00179",
+        "ROW-00180",
+        "ROW-00231",
+        "ROW-00232"
       ],
-      "expected_amount_minor": 114000,
+      "expected_amount_minor": 219000,
       "currency": "GBP",
       "acceptable_evidence_sets": [
         [
-          "ROW-DUP-96140",
-          "ROW-DUP-13061",
-          "DOC-INV-00075"
-        ],
-        [
-          "ROW-DUP-96140",
-          "ROW-DUP-13061",
-          "ROW-00149",
-          "ROW-00150",
-          "DOC-INV-00075"
+          "DOC-INV-00090",
+          "ROW-00179",
+          "ROW-00180",
+          "ROW-00231",
+          "ROW-00232"
         ]
       ],
-      "description": "Cloned ledger rows for invoice INV-2025-1035 creating duplicate accounting entry.",
+      "description": "E1: duplicated the balanced recognition of INV-2025-1037.",
       "before_state": {
+        "scenario": "E1",
         "rows": [
-          "ROW-00149",
-          "ROW-00150"
-        ]
+          {
+            "row_id": "ROW-00179",
+            "timestamp": "2025-01-26T16:22:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 219000,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-ZENITH-SUPPLY",
+            "invoice_id": "INV-2025-1037",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00180",
+            "timestamp": "2025-01-26T16:22:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 219000,
+            "currency": "GBP",
+            "entity_id": "ENT-ZENITH-SUPPLY",
+            "invoice_id": "INV-2025-1037",
+            "payment_id": null
+          }
+        ],
+        "invoice": {
+          "doc_id": "DOC-INV-00090",
+          "invoice_id": "INV-2025-1037",
+          "entity_id": "ENT-ZENITH-SUPPLY",
+          "issued_at": "2025-01-26T16:22:00+00:00",
+          "due_at": "2025-02-25T18:00:00+00:00",
+          "currency": "GBP",
+          "total_minor": 219000,
+          "line_items": [
+            {
+              "item_id": "ITEM-37-1",
+              "description": "Standard Goods & Services 1",
+              "quantity": 3,
+              "unit_price_minor": 73000,
+              "total_minor": 219000
+            }
+          ],
+          "document_type": "invoice",
+          "related_invoice_id": null
+        }
       },
       "after_state": {
-        "added_rows": [
-          "ROW-DUP-96140",
-          "ROW-DUP-13061"
+        "scenario": "E1",
+        "rows": [
+          {
+            "row_id": "ROW-00179",
+            "timestamp": "2025-01-26T16:22:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 219000,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-ZENITH-SUPPLY",
+            "invoice_id": "INV-2025-1037",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00180",
+            "timestamp": "2025-01-26T16:22:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 219000,
+            "currency": "GBP",
+            "entity_id": "ENT-ZENITH-SUPPLY",
+            "invoice_id": "INV-2025-1037",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00231",
+            "timestamp": "2025-01-26T16:22:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 219000,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-ZENITH-SUPPLY",
+            "invoice_id": "INV-2025-1037",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00232",
+            "timestamp": "2025-01-26T16:22:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 219000,
+            "currency": "GBP",
+            "entity_id": "ENT-ZENITH-SUPPLY",
+            "invoice_id": "INV-2025-1037",
+            "payment_id": null
+          }
         ]
       }
     },
     {
       "issue_id": "ISSUE-0002",
+      "type": "partial_payment",
+      "affected_ids": [
+        "PAY-2025-3069",
+        "ROW-00167",
+        "ROW-00168"
+      ],
+      "expected_amount_minor": 13800,
+      "currency": "EUR",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00082",
+          "DOC-PAY-00084",
+          "ROW-00167",
+          "ROW-00168"
+        ]
+      ],
+      "description": "E2: only 27600 of payment PAY-2025-3069 was allocated to receivables.",
+      "before_state": {
+        "scenario": "E2",
+        "payment": {
+          "doc_id": "DOC-PAY-00084",
+          "payment_id": "PAY-2025-3069",
+          "timestamp": "2025-01-05T14:00:00+00:00",
+          "currency": "EUR",
+          "amount_minor": 41400,
+          "invoice_refs": [
+            "INV-2025-1034"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00167",
+            "timestamp": "2025-01-05T14:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 41400,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-AURORA-LOGISTICS",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": "PAY-2025-3069"
+          },
+          {
+            "row_id": "ROW-00168",
+            "timestamp": "2025-01-05T14:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 41400,
+            "currency": "EUR",
+            "entity_id": "ENT-AURORA-LOGISTICS",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": "PAY-2025-3069"
+          }
+        ]
+      },
+      "after_state": {
+        "scenario": "E2",
+        "rows": [
+          {
+            "row_id": "ROW-00167",
+            "timestamp": "2025-01-05T14:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 27600,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-AURORA-LOGISTICS",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": "PAY-2025-3069"
+          },
+          {
+            "row_id": "ROW-00168",
+            "timestamp": "2025-01-05T14:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 27600,
+            "currency": "EUR",
+            "entity_id": "ENT-AURORA-LOGISTICS",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": "PAY-2025-3069"
+          }
+        ],
+        "allocated_amount_minor": 27600
+      }
+    },
+    {
+      "issue_id": "ISSUE-0003",
+      "type": "wrong_fx_or_date",
+      "affected_ids": [
+        "PAY-2025-3001",
+        "INV-2025-1000",
+        "ROW-00005",
+        "ROW-00006",
+        "ROW-00233",
+        "ROW-00234"
+      ],
+      "expected_amount_minor": 3010,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00001",
+          "DOC-PAY-00003",
+          "ROW-00005",
+          "ROW-00006",
+          "ROW-00233",
+          "ROW-00234",
+          "2025-01-27:EUR:USD"
+        ]
+      ],
+      "description": "E3: converted allocated payment PAY-2025-3001 using 1.2541 instead of 1.0905.",
+      "before_state": {
+        "scenario": "E3",
+        "payment": {
+          "doc_id": "DOC-PAY-00003",
+          "payment_id": "PAY-2025-3001",
+          "timestamp": "2025-01-27T14:00:00+00:00",
+          "currency": "EUR",
+          "amount_minor": 18400,
+          "invoice_refs": [
+            "INV-2025-1000"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00005",
+            "timestamp": "2025-01-27T14:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 18400,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1000",
+            "payment_id": "PAY-2025-3001"
+          },
+          {
+            "row_id": "ROW-00006",
+            "timestamp": "2025-01-27T14:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 18400,
+            "currency": "EUR",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1000",
+            "payment_id": "PAY-2025-3001"
+          }
+        ]
+      },
+      "after_state": {
+        "scenario": "E3",
+        "payment": {
+          "doc_id": "DOC-PAY-00003",
+          "payment_id": "PAY-2025-3001",
+          "timestamp": "2025-01-27T14:00:00+00:00",
+          "currency": "EUR",
+          "amount_minor": 18400,
+          "invoice_refs": [
+            "INV-2025-1000"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00005",
+            "timestamp": "2025-01-27T14:00:00+00:00",
+            "account": "1090-FX-CLEARING",
+            "debit_minor": 18400,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1000",
+            "payment_id": "PAY-2025-3001"
+          },
+          {
+            "row_id": "ROW-00006",
+            "timestamp": "2025-01-27T14:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 18400,
+            "currency": "EUR",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1000",
+            "payment_id": "PAY-2025-3001"
+          },
+          {
+            "row_id": "ROW-00233",
+            "timestamp": "2025-01-27T14:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 23075,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1000",
+            "payment_id": "PAY-2025-3001"
+          },
+          {
+            "row_id": "ROW-00234",
+            "timestamp": "2025-01-27T14:00:00+00:00",
+            "account": "1090-FX-CLEARING",
+            "debit_minor": 0,
+            "credit_minor": 23075,
+            "currency": "USD",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1000",
+            "payment_id": "PAY-2025-3001"
+          }
+        ],
+        "allocated_amount_minor": 18400,
+        "official_rate": "1.0905",
+        "bad_rate": "1.2541",
+        "expected_base_minor": 20065,
+        "actual_base_minor": 23075
+      }
+    },
+    {
+      "issue_id": "ISSUE-0004",
       "type": "period_misclassification",
       "affected_ids": [
+        "INV-2025-1011",
+        "ROW-00055",
+        "ROW-00056"
+      ],
+      "expected_amount_minor": 168300,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00028",
+          "ROW-00055",
+          "ROW-00056"
+        ]
+      ],
+      "description": "E4: January invoice INV-2025-1011 was recognized in the following period.",
+      "before_state": {
+        "scenario": "E4",
+        "invoice": {
+          "doc_id": "DOC-INV-00028",
+          "invoice_id": "INV-2025-1011",
+          "entity_id": "ENT-NEXUS-CORP",
+          "issued_at": "2025-01-28T12:50:00+00:00",
+          "due_at": "2025-02-25T18:00:00+00:00",
+          "currency": "GBP",
+          "total_minor": 168300,
+          "line_items": [
+            {
+              "item_id": "ITEM-11-1",
+              "description": "Standard Goods & Services 1",
+              "quantity": 3,
+              "unit_price_minor": 56100,
+              "total_minor": 168300
+            }
+          ],
+          "document_type": "invoice",
+          "related_invoice_id": null
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00055",
+            "timestamp": "2025-01-28T12:50:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 168300,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1011",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00056",
+            "timestamp": "2025-01-28T12:50:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 168300,
+            "currency": "GBP",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1011",
+            "payment_id": null
+          }
+        ]
+      },
+      "after_state": {
+        "scenario": "E4",
+        "rows": [
+          {
+            "row_id": "ROW-00055",
+            "timestamp": "2025-02-01T00:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 168300,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1011",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00056",
+            "timestamp": "2025-02-01T00:00:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 168300,
+            "currency": "GBP",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1011",
+            "payment_id": null
+          }
+        ]
+      }
+    },
+    {
+      "issue_id": "ISSUE-0005",
+      "type": "partial_payment",
+      "affected_ids": [
+        "PAY-2025-3087",
+        "ROW-00209",
+        "ROW-00210"
+      ],
+      "expected_amount_minor": 77250,
+      "currency": "EUR",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00103",
+          "DOC-PAY-00105",
+          "ROW-00209",
+          "ROW-00210"
+        ]
+      ],
+      "description": "X1: partial source-currency allocation of PAY-2025-3087 at the reporting boundary; its converted settlement also uses wrong FX.",
+      "before_state": {
+        "scenario": "X1",
+        "payment": {
+          "doc_id": "DOC-PAY-00105",
+          "payment_id": "PAY-2025-3087",
+          "timestamp": "2025-01-27T14:00:00+00:00",
+          "currency": "EUR",
+          "amount_minor": 154500,
+          "invoice_refs": [
+            "INV-2025-1043"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00209",
+            "timestamp": "2025-01-27T14:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 154500,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1043",
+            "payment_id": "PAY-2025-3087"
+          },
+          {
+            "row_id": "ROW-00210",
+            "timestamp": "2025-01-27T14:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 154500,
+            "currency": "EUR",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1043",
+            "payment_id": "PAY-2025-3087"
+          }
+        ]
+      },
+      "after_state": {
+        "scenario": "X1",
+        "payment": {
+          "doc_id": "DOC-PAY-00105",
+          "payment_id": "PAY-2025-3087",
+          "timestamp": "2025-01-31T23:59:59+00:00",
+          "currency": "EUR",
+          "amount_minor": 154500,
+          "invoice_refs": [
+            "INV-2025-1043"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00209",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1090-FX-CLEARING",
+            "debit_minor": 77250,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1043",
+            "payment_id": "PAY-2025-3087"
+          },
+          {
+            "row_id": "ROW-00210",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 77250,
+            "currency": "EUR",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1043",
+            "payment_id": "PAY-2025-3087"
+          }
+        ],
+        "allocated_amount_minor": 77250
+      }
+    },
+    {
+      "issue_id": "ISSUE-0006",
+      "type": "wrong_fx_or_date",
+      "affected_ids": [
+        "PAY-2025-3087",
+        "INV-2025-1043",
+        "ROW-00209",
+        "ROW-00210",
+        "ROW-00235",
+        "ROW-00236"
+      ],
+      "expected_amount_minor": 12661,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00103",
+          "DOC-PAY-00105",
+          "ROW-00209",
+          "ROW-00210",
+          "ROW-00235",
+          "ROW-00236",
+          "2025-01-31:EUR:USD"
+        ]
+      ],
+      "description": "X1: converted allocated payment PAY-2025-3087 using 1.2564 instead of 1.0925.",
+      "before_state": {
+        "scenario": "X1",
+        "payment": {
+          "doc_id": "DOC-PAY-00105",
+          "payment_id": "PAY-2025-3087",
+          "timestamp": "2025-01-27T14:00:00+00:00",
+          "currency": "EUR",
+          "amount_minor": 154500,
+          "invoice_refs": [
+            "INV-2025-1043"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00209",
+            "timestamp": "2025-01-27T14:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 154500,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1043",
+            "payment_id": "PAY-2025-3087"
+          },
+          {
+            "row_id": "ROW-00210",
+            "timestamp": "2025-01-27T14:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 154500,
+            "currency": "EUR",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1043",
+            "payment_id": "PAY-2025-3087"
+          }
+        ]
+      },
+      "after_state": {
+        "scenario": "X1",
+        "payment": {
+          "doc_id": "DOC-PAY-00105",
+          "payment_id": "PAY-2025-3087",
+          "timestamp": "2025-01-31T23:59:59+00:00",
+          "currency": "EUR",
+          "amount_minor": 154500,
+          "invoice_refs": [
+            "INV-2025-1043"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00209",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1090-FX-CLEARING",
+            "debit_minor": 77250,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1043",
+            "payment_id": "PAY-2025-3087"
+          },
+          {
+            "row_id": "ROW-00210",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 77250,
+            "currency": "EUR",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1043",
+            "payment_id": "PAY-2025-3087"
+          },
+          {
+            "row_id": "ROW-00235",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 97057,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1043",
+            "payment_id": "PAY-2025-3087"
+          },
+          {
+            "row_id": "ROW-00236",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1090-FX-CLEARING",
+            "debit_minor": 0,
+            "credit_minor": 97057,
+            "currency": "USD",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1043",
+            "payment_id": "PAY-2025-3087"
+          }
+        ],
+        "allocated_amount_minor": 77250,
+        "official_rate": "1.0925",
+        "bad_rate": "1.2564",
+        "expected_base_minor": 84396,
+        "actual_base_minor": 97057
+      }
+    },
+    {
+      "issue_id": "ISSUE-0007",
+      "type": "duplicate_accounts",
+      "affected_ids": [
+        "INV-2025-1042",
+        "ROW-00201",
+        "ROW-00202",
+        "ROW-00237",
+        "ROW-00238"
+      ],
+      "expected_amount_minor": 577700,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00101",
+          "ROW-00201",
+          "ROW-00202",
+          "ROW-00237",
+          "ROW-00238"
+        ]
+      ],
+      "description": "X2: duplicated the balanced recognition of INV-2025-1042.",
+      "before_state": {
+        "scenario": "X2",
+        "rows": [
+          {
+            "row_id": "ROW-00201",
+            "timestamp": "2025-01-28T14:25:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 577700,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1042",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00202",
+            "timestamp": "2025-01-28T14:25:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 577700,
+            "currency": "GBP",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1042",
+            "payment_id": null
+          }
+        ],
+        "invoice": {
+          "doc_id": "DOC-INV-00101",
+          "invoice_id": "INV-2025-1042",
+          "entity_id": "ENT-ALPHA-NETWORKS",
+          "issued_at": "2025-01-28T14:25:00+00:00",
+          "due_at": "2025-02-25T18:00:00+00:00",
+          "currency": "GBP",
+          "total_minor": 577700,
+          "line_items": [
+            {
+              "item_id": "ITEM-42-1",
+              "description": "Standard Goods & Services 1",
+              "quantity": 1,
+              "unit_price_minor": 64700,
+              "total_minor": 64700
+            },
+            {
+              "item_id": "ITEM-42-2",
+              "description": "Standard Goods & Services 2",
+              "quantity": 9,
+              "unit_price_minor": 57000,
+              "total_minor": 513000
+            }
+          ],
+          "document_type": "invoice",
+          "related_invoice_id": null
+        }
+      },
+      "after_state": {
+        "scenario": "X2",
+        "rows": [
+          {
+            "row_id": "ROW-00201",
+            "timestamp": "2025-01-28T14:25:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 577700,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1042",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00202",
+            "timestamp": "2025-01-28T14:25:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 577700,
+            "currency": "GBP",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1042",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00237",
+            "timestamp": "2025-01-28T14:25:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 577700,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1042",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00238",
+            "timestamp": "2025-01-28T14:25:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 577700,
+            "currency": "GBP",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1042",
+            "payment_id": null
+          }
+        ]
+      }
+    },
+    {
+      "issue_id": "ISSUE-0008",
+      "type": "period_misclassification",
+      "affected_ids": [
+        "INV-2025-1042",
+        "ROW-00237",
+        "ROW-00238"
+      ],
+      "expected_amount_minor": 577700,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00101",
+          "ROW-00237",
+          "ROW-00238"
+        ]
+      ],
+      "description": "X2: the duplicate recognition of INV-2025-1042 was posted to the following period.",
+      "before_state": {
+        "scenario": "X2",
+        "invoice": {
+          "doc_id": "DOC-INV-00101",
+          "invoice_id": "INV-2025-1042",
+          "entity_id": "ENT-ALPHA-NETWORKS",
+          "issued_at": "2025-01-28T14:25:00+00:00",
+          "due_at": "2025-02-25T18:00:00+00:00",
+          "currency": "GBP",
+          "total_minor": 577700,
+          "line_items": [
+            {
+              "item_id": "ITEM-42-1",
+              "description": "Standard Goods & Services 1",
+              "quantity": 1,
+              "unit_price_minor": 64700,
+              "total_minor": 64700
+            },
+            {
+              "item_id": "ITEM-42-2",
+              "description": "Standard Goods & Services 2",
+              "quantity": 9,
+              "unit_price_minor": 57000,
+              "total_minor": 513000
+            }
+          ],
+          "document_type": "invoice",
+          "related_invoice_id": null
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00237",
+            "timestamp": "2025-01-28T14:25:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 577700,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1042",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00238",
+            "timestamp": "2025-01-28T14:25:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 577700,
+            "currency": "GBP",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1042",
+            "payment_id": null
+          }
+        ]
+      },
+      "after_state": {
+        "scenario": "X2",
+        "rows": [
+          {
+            "row_id": "ROW-00237",
+            "timestamp": "2025-02-01T00:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 577700,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1042",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00238",
+            "timestamp": "2025-02-01T00:00:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 577700,
+            "currency": "GBP",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1042",
+            "payment_id": null
+          }
+        ]
+      }
+    },
+    {
+      "issue_id": "ISSUE-0009",
+      "type": "duplicate_accounts",
+      "affected_ids": [
         "INV-2025-1020",
-        "ROW-00087",
-        "ROW-00088"
+        "ROW-00097",
+        "ROW-00098",
+        "ROW-00239",
+        "ROW-00240"
       ],
       "expected_amount_minor": 86100,
       "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00044",
-          "ROW-00087",
-          "ROW-00088"
+          "DOC-INV-00049",
+          "ROW-00097",
+          "ROW-00098",
+          "ROW-00239",
+          "ROW-00240"
         ]
       ],
-      "description": "Invoice INV-2025-1020 belongs to February (2025-02-05T11:00:00+00:00) but was recognized in January ledger.",
+      "description": "E1: duplicated the balanced recognition of INV-2025-1020.",
       "before_state": {
-        "doc_date": "2025-01-28T09:42:00+00:00"
+        "scenario": "E1",
+        "rows": [
+          {
+            "row_id": "ROW-00097",
+            "timestamp": "2025-01-28T09:42:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 86100,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-TITAN-CONSULTING",
+            "invoice_id": "INV-2025-1020",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00098",
+            "timestamp": "2025-01-28T09:42:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 86100,
+            "currency": "USD",
+            "entity_id": "ENT-TITAN-CONSULTING",
+            "invoice_id": "INV-2025-1020",
+            "payment_id": null
+          }
+        ],
+        "invoice": {
+          "doc_id": "DOC-INV-00049",
+          "invoice_id": "INV-2025-1020",
+          "entity_id": "ENT-TITAN-CONSULTING",
+          "issued_at": "2025-01-28T09:42:00+00:00",
+          "due_at": "2025-02-25T18:00:00+00:00",
+          "currency": "USD",
+          "total_minor": 86100,
+          "line_items": [
+            {
+              "item_id": "ITEM-20-1",
+              "description": "Standard Goods & Services 1",
+              "quantity": 3,
+              "unit_price_minor": 28700,
+              "total_minor": 86100
+            }
+          ],
+          "document_type": "invoice",
+          "related_invoice_id": null
+        }
       },
       "after_state": {
-        "doc_date": "2025-02-05T11:00:00+00:00"
+        "scenario": "E1",
+        "rows": [
+          {
+            "row_id": "ROW-00097",
+            "timestamp": "2025-01-28T09:42:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 86100,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-TITAN-CONSULTING",
+            "invoice_id": "INV-2025-1020",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00098",
+            "timestamp": "2025-01-28T09:42:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 86100,
+            "currency": "USD",
+            "entity_id": "ENT-TITAN-CONSULTING",
+            "invoice_id": "INV-2025-1020",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00239",
+            "timestamp": "2025-01-28T09:42:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 86100,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-TITAN-CONSULTING",
+            "invoice_id": "INV-2025-1020",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00240",
+            "timestamp": "2025-01-28T09:42:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 86100,
+            "currency": "USD",
+            "entity_id": "ENT-TITAN-CONSULTING",
+            "invoice_id": "INV-2025-1020",
+            "payment_id": null
+          }
+        ]
+      }
+    },
+    {
+      "issue_id": "ISSUE-0010",
+      "type": "partial_payment",
+      "affected_ids": [
+        "PAY-2025-3012",
+        "ROW-00029",
+        "ROW-00030"
+      ],
+      "expected_amount_minor": 23633,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00014",
+          "DOC-PAY-00015",
+          "ROW-00029",
+          "ROW-00030"
+        ]
+      ],
+      "description": "E2: only 47267 of payment PAY-2025-3012 was allocated to receivables.",
+      "before_state": {
+        "scenario": "E2",
+        "payment": {
+          "doc_id": "DOC-PAY-00015",
+          "payment_id": "PAY-2025-3012",
+          "timestamp": "2025-01-21T10:00:00+00:00",
+          "currency": "GBP",
+          "amount_minor": 70900,
+          "invoice_refs": [
+            "INV-2025-1006"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00029",
+            "timestamp": "2025-01-21T10:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 70900,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1006",
+            "payment_id": "PAY-2025-3012"
+          },
+          {
+            "row_id": "ROW-00030",
+            "timestamp": "2025-01-21T10:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 70900,
+            "currency": "GBP",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1006",
+            "payment_id": "PAY-2025-3012"
+          }
+        ]
+      },
+      "after_state": {
+        "scenario": "E2",
+        "rows": [
+          {
+            "row_id": "ROW-00029",
+            "timestamp": "2025-01-21T10:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 47267,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1006",
+            "payment_id": "PAY-2025-3012"
+          },
+          {
+            "row_id": "ROW-00030",
+            "timestamp": "2025-01-21T10:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 47267,
+            "currency": "GBP",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1006",
+            "payment_id": "PAY-2025-3012"
+          }
+        ],
+        "allocated_amount_minor": 47267
+      }
+    },
+    {
+      "issue_id": "ISSUE-0011",
+      "type": "wrong_fx_or_date",
+      "affected_ids": [
+        "PAY-2025-2033",
+        "INV-2025-1033",
+        "ROW-00161",
+        "ROW-00162",
+        "ROW-00241",
+        "ROW-00242"
+      ],
+      "expected_amount_minor": 95436,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00080",
+          "DOC-PAY-00081",
+          "ROW-00161",
+          "ROW-00162",
+          "ROW-00241",
+          "ROW-00242",
+          "2025-01-19:EUR:USD"
+        ]
+      ],
+      "description": "E3: converted allocated payment PAY-2025-2033 using 1.2651 instead of 1.1001.",
+      "before_state": {
+        "scenario": "E3",
+        "payment": {
+          "doc_id": "DOC-PAY-00081",
+          "payment_id": "PAY-2025-2033",
+          "timestamp": "2025-01-19T08:17:00+00:00",
+          "currency": "EUR",
+          "amount_minor": 578400,
+          "invoice_refs": [
+            "INV-2025-1033"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00161",
+            "timestamp": "2025-01-19T08:17:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 578400,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-STELLAR-INDUSTRIES",
+            "invoice_id": "INV-2025-1033",
+            "payment_id": "PAY-2025-2033"
+          },
+          {
+            "row_id": "ROW-00162",
+            "timestamp": "2025-01-19T08:17:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 578400,
+            "currency": "EUR",
+            "entity_id": "ENT-STELLAR-INDUSTRIES",
+            "invoice_id": "INV-2025-1033",
+            "payment_id": "PAY-2025-2033"
+          }
+        ]
+      },
+      "after_state": {
+        "scenario": "E3",
+        "payment": {
+          "doc_id": "DOC-PAY-00081",
+          "payment_id": "PAY-2025-2033",
+          "timestamp": "2025-01-19T08:17:00+00:00",
+          "currency": "EUR",
+          "amount_minor": 578400,
+          "invoice_refs": [
+            "INV-2025-1033"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00161",
+            "timestamp": "2025-01-19T08:17:00+00:00",
+            "account": "1090-FX-CLEARING",
+            "debit_minor": 578400,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-STELLAR-INDUSTRIES",
+            "invoice_id": "INV-2025-1033",
+            "payment_id": "PAY-2025-2033"
+          },
+          {
+            "row_id": "ROW-00162",
+            "timestamp": "2025-01-19T08:17:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 578400,
+            "currency": "EUR",
+            "entity_id": "ENT-STELLAR-INDUSTRIES",
+            "invoice_id": "INV-2025-1033",
+            "payment_id": "PAY-2025-2033"
+          },
+          {
+            "row_id": "ROW-00241",
+            "timestamp": "2025-01-19T08:17:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 731734,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-STELLAR-INDUSTRIES",
+            "invoice_id": "INV-2025-1033",
+            "payment_id": "PAY-2025-2033"
+          },
+          {
+            "row_id": "ROW-00242",
+            "timestamp": "2025-01-19T08:17:00+00:00",
+            "account": "1090-FX-CLEARING",
+            "debit_minor": 0,
+            "credit_minor": 731734,
+            "currency": "USD",
+            "entity_id": "ENT-STELLAR-INDUSTRIES",
+            "invoice_id": "INV-2025-1033",
+            "payment_id": "PAY-2025-2033"
+          }
+        ],
+        "allocated_amount_minor": 578400,
+        "official_rate": "1.1001",
+        "bad_rate": "1.2651",
+        "expected_base_minor": 636298,
+        "actual_base_minor": 731734
       }
     }
+  ],
+  "generator_version": "2.0.0",
+  "generation_config": {},
+  "error_types": [
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "X1",
+    "X2",
+    "E1",
+    "E2",
+    "E3"
   ]
 }

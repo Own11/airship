@@ -5,68 +5,542 @@
   "changes": [
     {
       "issue_id": "ISSUE-0001",
-      "type": "duplicate_accounts",
+      "type": "partial_payment",
       "affected_ids": [
-        "ROW-00089",
-        "ROW-00090",
-        "ROW-DUP-88663",
-        "ROW-DUP-42474",
-        "INV-2025-1024"
+        "PAY-2025-2021",
+        "ROW-00115",
+        "ROW-00116"
       ],
-      "expected_amount_minor": 269700,
+      "expected_amount_minor": 396100,
       "currency": "GBP",
       "acceptable_evidence_sets": [
         [
-          "ROW-DUP-88663",
-          "ROW-DUP-42474",
-          "DOC-INV-00045"
-        ],
-        [
-          "ROW-DUP-88663",
-          "ROW-DUP-42474",
-          "ROW-00089",
-          "ROW-00090",
-          "DOC-INV-00045"
+          "DOC-INV-00057",
+          "DOC-PAY-00058",
+          "ROW-00115",
+          "ROW-00116"
         ]
       ],
-      "description": "Cloned ledger rows for invoice INV-2025-1024 creating duplicate accounting entry.",
+      "description": "X1: partial source-currency allocation of PAY-2025-2021 at the reporting boundary; its converted settlement also uses wrong FX.",
       "before_state": {
+        "scenario": "X1",
+        "payment": {
+          "doc_id": "DOC-PAY-00058",
+          "payment_id": "PAY-2025-2021",
+          "timestamp": "2025-01-21T15:35:00+00:00",
+          "currency": "GBP",
+          "amount_minor": 792200,
+          "invoice_refs": [
+            "INV-2025-1021"
+          ],
+          "direction": "receipt"
+        },
         "rows": [
-          "ROW-00089",
-          "ROW-00090"
+          {
+            "row_id": "ROW-00115",
+            "timestamp": "2025-01-21T15:35:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 792200,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1021",
+            "payment_id": "PAY-2025-2021"
+          },
+          {
+            "row_id": "ROW-00116",
+            "timestamp": "2025-01-21T15:35:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 792200,
+            "currency": "GBP",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1021",
+            "payment_id": "PAY-2025-2021"
+          }
         ]
       },
       "after_state": {
-        "added_rows": [
-          "ROW-DUP-88663",
-          "ROW-DUP-42474"
-        ]
+        "scenario": "X1",
+        "payment": {
+          "doc_id": "DOC-PAY-00058",
+          "payment_id": "PAY-2025-2021",
+          "timestamp": "2025-01-31T23:59:59+00:00",
+          "currency": "GBP",
+          "amount_minor": 792200,
+          "invoice_refs": [
+            "INV-2025-1021"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00115",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1090-FX-CLEARING",
+            "debit_minor": 396100,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1021",
+            "payment_id": "PAY-2025-2021"
+          },
+          {
+            "row_id": "ROW-00116",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 396100,
+            "currency": "GBP",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1021",
+            "payment_id": "PAY-2025-2021"
+          }
+        ],
+        "allocated_amount_minor": 396100
       }
     },
     {
       "issue_id": "ISSUE-0002",
-      "type": "period_misclassification",
+      "type": "wrong_fx_or_date",
       "affected_ids": [
-        "INV-2025-1037",
-        "ROW-00145",
-        "ROW-00146"
+        "PAY-2025-2021",
+        "INV-2025-1021",
+        "ROW-00115",
+        "ROW-00116",
+        "ROW-00249",
+        "ROW-00250"
       ],
-      "expected_amount_minor": 630000,
+      "expected_amount_minor": 77596,
       "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00073",
-          "ROW-00145",
-          "ROW-00146"
+          "DOC-INV-00057",
+          "DOC-PAY-00058",
+          "ROW-00115",
+          "ROW-00116",
+          "ROW-00249",
+          "ROW-00250",
+          "2025-01-31:GBP:USD"
         ]
       ],
-      "description": "Invoice INV-2025-1037 belongs to February (2025-02-05T11:00:00+00:00) but was recognized in January ledger.",
+      "description": "X1: converted allocated payment PAY-2025-2021 using 1.5020 instead of 1.3061.",
       "before_state": {
-        "doc_date": "2025-01-25T16:15:00+00:00"
+        "scenario": "X1",
+        "payment": {
+          "doc_id": "DOC-PAY-00058",
+          "payment_id": "PAY-2025-2021",
+          "timestamp": "2025-01-21T15:35:00+00:00",
+          "currency": "GBP",
+          "amount_minor": 792200,
+          "invoice_refs": [
+            "INV-2025-1021"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00115",
+            "timestamp": "2025-01-21T15:35:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 792200,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1021",
+            "payment_id": "PAY-2025-2021"
+          },
+          {
+            "row_id": "ROW-00116",
+            "timestamp": "2025-01-21T15:35:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 792200,
+            "currency": "GBP",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1021",
+            "payment_id": "PAY-2025-2021"
+          }
+        ]
       },
       "after_state": {
-        "doc_date": "2025-02-05T11:00:00+00:00"
+        "scenario": "X1",
+        "payment": {
+          "doc_id": "DOC-PAY-00058",
+          "payment_id": "PAY-2025-2021",
+          "timestamp": "2025-01-31T23:59:59+00:00",
+          "currency": "GBP",
+          "amount_minor": 792200,
+          "invoice_refs": [
+            "INV-2025-1021"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00115",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1090-FX-CLEARING",
+            "debit_minor": 396100,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1021",
+            "payment_id": "PAY-2025-2021"
+          },
+          {
+            "row_id": "ROW-00116",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 396100,
+            "currency": "GBP",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1021",
+            "payment_id": "PAY-2025-2021"
+          },
+          {
+            "row_id": "ROW-00249",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 594942,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1021",
+            "payment_id": "PAY-2025-2021"
+          },
+          {
+            "row_id": "ROW-00250",
+            "timestamp": "2025-01-31T23:59:59+00:00",
+            "account": "1090-FX-CLEARING",
+            "debit_minor": 0,
+            "credit_minor": 594942,
+            "currency": "USD",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1021",
+            "payment_id": "PAY-2025-2021"
+          }
+        ],
+        "allocated_amount_minor": 396100,
+        "official_rate": "1.3061",
+        "bad_rate": "1.5020",
+        "expected_base_minor": 517346,
+        "actual_base_minor": 594942
+      }
+    },
+    {
+      "issue_id": "ISSUE-0003",
+      "type": "duplicate_accounts",
+      "affected_ids": [
+        "INV-2025-1044",
+        "ROW-00225",
+        "ROW-00226",
+        "ROW-00251",
+        "ROW-00252"
+      ],
+      "expected_amount_minor": 568800,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00113",
+          "ROW-00225",
+          "ROW-00226",
+          "ROW-00251",
+          "ROW-00252"
+        ]
+      ],
+      "description": "E1: duplicated the balanced recognition of INV-2025-1044.",
+      "before_state": {
+        "scenario": "E1",
+        "rows": [
+          {
+            "row_id": "ROW-00225",
+            "timestamp": "2025-01-16T15:41:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 568800,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-ORION-RETAIL",
+            "invoice_id": "INV-2025-1044",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00226",
+            "timestamp": "2025-01-16T15:41:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 568800,
+            "currency": "GBP",
+            "entity_id": "ENT-ORION-RETAIL",
+            "invoice_id": "INV-2025-1044",
+            "payment_id": null
+          }
+        ],
+        "invoice": {
+          "doc_id": "DOC-INV-00113",
+          "invoice_id": "INV-2025-1044",
+          "entity_id": "ENT-ORION-RETAIL",
+          "issued_at": "2025-01-16T15:41:00+00:00",
+          "due_at": "2025-02-16T18:00:00+00:00",
+          "currency": "GBP",
+          "total_minor": 568800,
+          "line_items": [
+            {
+              "item_id": "ITEM-44-1",
+              "description": "Standard Goods & Services 1",
+              "quantity": 3,
+              "unit_price_minor": 44000,
+              "total_minor": 132000
+            },
+            {
+              "item_id": "ITEM-44-2",
+              "description": "Standard Goods & Services 2",
+              "quantity": 8,
+              "unit_price_minor": 54600,
+              "total_minor": 436800
+            }
+          ],
+          "document_type": "invoice",
+          "related_invoice_id": null
+        }
+      },
+      "after_state": {
+        "scenario": "E1",
+        "rows": [
+          {
+            "row_id": "ROW-00225",
+            "timestamp": "2025-01-16T15:41:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 568800,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-ORION-RETAIL",
+            "invoice_id": "INV-2025-1044",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00226",
+            "timestamp": "2025-01-16T15:41:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 568800,
+            "currency": "GBP",
+            "entity_id": "ENT-ORION-RETAIL",
+            "invoice_id": "INV-2025-1044",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00251",
+            "timestamp": "2025-01-16T15:41:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 568800,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-ORION-RETAIL",
+            "invoice_id": "INV-2025-1044",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00252",
+            "timestamp": "2025-01-16T15:41:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 568800,
+            "currency": "GBP",
+            "entity_id": "ENT-ORION-RETAIL",
+            "invoice_id": "INV-2025-1044",
+            "payment_id": null
+          }
+        ]
+      }
+    },
+    {
+      "issue_id": "ISSUE-0004",
+      "type": "partial_payment",
+      "affected_ids": [
+        "PAY-2025-3024",
+        "ROW-00063",
+        "ROW-00064"
+      ],
+      "expected_amount_minor": 149450,
+      "currency": "EUR",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00031",
+          "DOC-PAY-00032",
+          "ROW-00063",
+          "ROW-00064"
+        ]
+      ],
+      "description": "E2: only 298900 of payment PAY-2025-3024 was allocated to receivables.",
+      "before_state": {
+        "scenario": "E2",
+        "payment": {
+          "doc_id": "DOC-PAY-00032",
+          "payment_id": "PAY-2025-3024",
+          "timestamp": "2025-01-03T10:00:00+00:00",
+          "currency": "EUR",
+          "amount_minor": 448350,
+          "invoice_refs": [
+            "INV-2025-1012"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00063",
+            "timestamp": "2025-01-03T10:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 448350,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1012",
+            "payment_id": "PAY-2025-3024"
+          },
+          {
+            "row_id": "ROW-00064",
+            "timestamp": "2025-01-03T10:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 448350,
+            "currency": "EUR",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1012",
+            "payment_id": "PAY-2025-3024"
+          }
+        ]
+      },
+      "after_state": {
+        "scenario": "E2",
+        "rows": [
+          {
+            "row_id": "ROW-00063",
+            "timestamp": "2025-01-03T10:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 298900,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1012",
+            "payment_id": "PAY-2025-3024"
+          },
+          {
+            "row_id": "ROW-00064",
+            "timestamp": "2025-01-03T10:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 298900,
+            "currency": "EUR",
+            "entity_id": "ENT-APEX-SOLUTIONS",
+            "invoice_id": "INV-2025-1012",
+            "payment_id": "PAY-2025-3024"
+          }
+        ],
+        "allocated_amount_minor": 298900
+      }
+    },
+    {
+      "issue_id": "ISSUE-0005",
+      "type": "period_misclassification",
+      "affected_ids": [
+        "INV-2025-1033",
+        "ROW-00171",
+        "ROW-00172"
+      ],
+      "expected_amount_minor": 687400,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00086",
+          "ROW-00171",
+          "ROW-00172"
+        ]
+      ],
+      "description": "E4: January invoice INV-2025-1033 was recognized in the following period.",
+      "before_state": {
+        "scenario": "E4",
+        "invoice": {
+          "doc_id": "DOC-INV-00086",
+          "invoice_id": "INV-2025-1033",
+          "entity_id": "ENT-ALPHA-NETWORKS",
+          "issued_at": "2025-01-10T15:13:00+00:00",
+          "due_at": "2025-02-10T18:00:00+00:00",
+          "currency": "USD",
+          "total_minor": 687400,
+          "line_items": [
+            {
+              "item_id": "ITEM-33-1",
+              "description": "Standard Goods & Services 1",
+              "quantity": 7,
+              "unit_price_minor": 98200,
+              "total_minor": 687400
+            }
+          ],
+          "document_type": "invoice",
+          "related_invoice_id": null
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00171",
+            "timestamp": "2025-01-10T15:13:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 687400,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1033",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00172",
+            "timestamp": "2025-01-10T15:13:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 687400,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1033",
+            "payment_id": null
+          }
+        ]
+      },
+      "after_state": {
+        "scenario": "E4",
+        "rows": [
+          {
+            "row_id": "ROW-00171",
+            "timestamp": "2025-02-01T00:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 687400,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1033",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00172",
+            "timestamp": "2025-02-01T00:00:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 687400,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1033",
+            "payment_id": null
+          }
+        ]
       }
     }
+  ],
+  "generator_version": "2.0.0",
+  "generation_config": {},
+  "error_types": [
+    "X1",
+    "E1",
+    "E2",
+    "E4"
   ]
 }

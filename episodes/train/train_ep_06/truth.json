@@ -5,17 +5,17 @@
       "issue_id": "ISSUE-0001",
       "type": "period_misclassification",
       "affected_ids": [
-        "INV-2025-1067",
-        "ROW-00257",
-        "ROW-00258"
+        "INV-2025-1034",
+        "ROW-00155",
+        "ROW-00156"
       ],
-      "expected_amount_minor": 1142300,
-      "currency": "GBP",
+      "expected_amount_minor": 173200,
+      "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00129",
-          "ROW-00257",
-          "ROW-00258"
+          "DOC-INV-00078",
+          "ROW-00155",
+          "ROW-00156"
         ]
       ]
     }

@@ -1,14 +1,33 @@
-from typing import List, Dict, Any, Tuple
-from decimal import Decimal
-import random
+"""Controlled, non-overlapping financial errors with reproducible public proof."""
 import copy
+from decimal import Decimal, ROUND_HALF_UP
+import random
+from typing import Any, List
+
 from fintech_rl.generator.company import SyntheticCompany, ACCOUNTS
-from fintech_rl.schema import LedgerRow, InvoiceDoc, PaymentDoc, TruthIssue, ProvenanceChange
+from fintech_rl.identifiers import fx_record_id
+from fintech_rl.schema import InvoiceDoc, LedgerRow, PaymentDoc, TruthIssue, ProvenanceChange
 from fintech_rl.scoring.tolerances import convert_fx
 
 
+_ERROR_ALIASES = {
+    "E1": "E1", "duplicate_accounts": "E1",
+    "E2": "E2", "partial_payment": "E2",
+    "E3": "E3", "wrong_fx_or_date": "E3",
+    "E4": "E4", "period_misclassification": "E4",
+    "X1": "X1", "X2": "X2",
+}
+_ERROR_COST = {"E1": 1, "E2": 1, "E3": 1, "E4": 1, "X1": 2, "X2": 2}
+
+
 class ErrorInjector:
-    """Injects 4 distinct error types and 2 interacting scenarios into a SyntheticCompany."""
+    """Inject E1–E4 and two linked two-issue scenarios.
+
+    Independent scenarios reserve the complete invoice family. A later injection
+    cannot change evidence or amounts on which an earlier issue depends. X1/X2
+    intentionally share a family internally and each emit two ordinary issues,
+    preserving the public one-to-one matcher schema.
+    """
 
     def __init__(self, company: SyntheticCompany, seed: int):
         self.company = company
@@ -16,343 +35,276 @@ class ErrorInjector:
         self.issues: List[TruthIssue] = []
         self.changes: List[ProvenanceChange] = []
         self._issue_counter = 1
+        self._reserved_invoices: set[str] = set()
 
     def _next_issue_id(self) -> str:
-        iid = f"ISSUE-{self._issue_counter:04d}"
+        issue_id = f"ISSUE-{self._issue_counter:04d}"
         self._issue_counter += 1
-        return iid
+        return issue_id
 
-    def inject_e1_duplicate_accounts(self) -> bool:
-        """
-        E1: Duplicate accounting entry.
-        A valid invoice or payment entry in ledger is duplicated (both debit & credit rows cloned),
-        causing double-counting on the ledger compared to the supporting document.
-        Discrepancy = amount of duplicated transaction.
-        Evidence: [original row_ids, duplicated row_ids, doc_id].
-        """
-        # Find an invoice with ledger rows
-        candidates = [inv for inv in self.company.invoices if any(r.invoice_id == inv.invoice_id for r in self.company.ledger)]
-        if not candidates:
-            return False
-        inv = self.rng.choice(candidates)
-        matching_rows = [r for r in self.company.ledger if r.invoice_id == inv.invoice_id and r.payment_id is None]
-        if len(matching_rows) < 2:
-            return False
+    def _check_budget(self, count: int) -> None:
+        if len(self.issues) + count > 12:
+            raise ValueError("An episode supports at most 12 truth issues")
 
-        r_debit = [r for r in matching_rows if r.debit_minor > 0][0]
-        r_credit = [r for r in matching_rows if r.credit_minor > 0][0]
+    def _invoices(self) -> list[InvoiceDoc]:
+        returned = {inv.related_invoice_id for inv in self.company.invoices
+                    if inv.document_type == "credit_note"}
+        return [inv for inv in self.company.invoices
+                if inv.document_type == "invoice"
+                and inv.invoice_id not in returned
+                and inv.invoice_id not in self._reserved_invoices]
 
-        dup_r1_id = f"ROW-DUP-{self.rng.randint(10000, 99999)}"
-        dup_r2_id = f"ROW-DUP-{self.rng.randint(10000, 99999)}"
+    def _invoice_rows(self, invoice_id: str) -> list[LedgerRow]:
+        return [row for row in self.company.ledger
+                if row.invoice_id == invoice_id and row.payment_id is None]
 
-        dup_r1 = LedgerRow(
-            row_id=dup_r1_id,
-            timestamp=r_debit.timestamp,
-            account=r_debit.account,
-            debit_minor=r_debit.debit_minor,
-            credit_minor=0,
-            currency=r_debit.currency,
-            entity_id=r_debit.entity_id,
-            invoice_id=r_debit.invoice_id,
-            payment_id=None
-        )
-        dup_r2 = LedgerRow(
-            row_id=dup_r2_id,
-            timestamp=r_credit.timestamp,
-            account=r_credit.account,
-            debit_minor=0,
-            credit_minor=r_credit.credit_minor,
-            currency=r_credit.currency,
-            entity_id=r_credit.entity_id,
-            invoice_id=r_credit.invoice_id,
-            payment_id=None
-        )
+    def _receipts(self, foreign_only: bool = False) -> list[tuple[PaymentDoc, InvoiceDoc]]:
+        invoices = {inv.invoice_id: inv for inv in self._invoices()}
+        return [(pay, invoices[pay.invoice_refs[0]]) for pay in self.company.payments
+                if pay.direction == "receipt" and len(pay.invoice_refs) == 1
+                and pay.invoice_refs[0] in invoices and pay.amount_minor > 1000
+                and (not foreign_only or pay.currency != self.company.base_currency)]
 
-        self.company.ledger.extend([dup_r1, dup_r2])
+    def _payment_rows(self, payment_id: str) -> list[LedgerRow]:
+        return [row for row in self.company.ledger if row.payment_id == payment_id]
 
-        issue_id = self._next_issue_id()
-        affected = [r_debit.row_id, r_credit.row_id, dup_r1_id, dup_r2_id, inv.invoice_id]
-        evidence_set = [dup_r1_id, dup_r2_id, inv.doc_id]
+    @staticmethod
+    def _snapshots(rows: list[LedgerRow]) -> list[dict[str, Any]]:
+        return [row.model_dump() for row in rows]
 
+    def _record(
+        self, issue_type: str, affected: list[str], amount: int, currency: str,
+        evidence: list[str], description: str, before: dict[str, Any], after: dict[str, Any],
+    ) -> None:
         issue = TruthIssue(
-            issue_id=issue_id,
-            type="duplicate_accounts",
-            affected_ids=affected,
-            expected_amount_minor=inv.total_minor,
-            currency=inv.currency,
-            acceptable_evidence_sets=[
-                [dup_r1_id, dup_r2_id, inv.doc_id],
-                [dup_r1_id, dup_r2_id, r_debit.row_id, r_credit.row_id, inv.doc_id]
-            ]
+            issue_id=self._next_issue_id(), type=issue_type, affected_ids=affected,
+            expected_amount_minor=amount, currency=currency,
+            acceptable_evidence_sets=[evidence],
         )
         self.issues.append(issue)
+        self.changes.append(ProvenanceChange(
+            **issue.model_dump(), description=description,
+            before_state=before, after_state=after,
+        ))
 
-        change = ProvenanceChange(
-            issue_id=issue_id,
-            type="duplicate_accounts",
-            affected_ids=affected,
-            expected_amount_minor=inv.total_minor,
-            currency=inv.currency,
-            acceptable_evidence_sets=issue.acceptable_evidence_sets,
-            description=f"Cloned ledger rows for invoice {inv.invoice_id} creating duplicate accounting entry.",
-            before_state={"rows": [r_debit.row_id, r_credit.row_id]},
-            after_state={"added_rows": [dup_r1_id, dup_r2_id]}
+    def _finish(self) -> None:
+        self.company.ledger.sort(key=lambda row: (row.timestamp, row.row_id))
+        if self.company.manifest is None:
+            raise ValueError("Generate the company before injecting errors")
+        self.company.manifest.n_records = len(self.company.ledger)
+        self.company.manifest.n_documents = len(self.company.invoices) + len(self.company.payments)
+        if not 200 <= self.company.manifest.n_records <= 2000:
+            raise ValueError("Injected episode violates the ledger record budget")
+        if not 20 <= self.company.manifest.n_documents <= 200:
+            raise ValueError("Injected episode violates the document budget")
+
+    def _duplicate(self, invoice: InvoiceDoc, scenario: str) -> list[LedgerRow]:
+        originals = self._invoice_rows(invoice.invoice_id)
+        before = self._snapshots(originals)
+        duplicates = [row.model_copy(update={"row_id": self.company._next_row_id()})
+                      for row in originals]
+        self.company.ledger.extend(duplicates)
+        rows = originals + duplicates
+        self._record(
+            "duplicate_accounts", [invoice.invoice_id] + [row.row_id for row in rows],
+            invoice.total_minor, invoice.currency,
+            [invoice.doc_id] + [row.row_id for row in rows],
+            f"{scenario}: duplicated the balanced recognition of {invoice.invoice_id}.",
+            {"scenario": scenario, "rows": before, "invoice": invoice.model_dump()},
+            {"scenario": scenario, "rows": self._snapshots(rows)},
         )
-        self.changes.append(change)
+        self._reserved_invoices.add(invoice.invoice_id)
+        return duplicates
+
+    def inject_e1_duplicate_accounts(self) -> bool:
+        self._check_budget(1)
+        candidates = [inv for inv in self._invoices() if len(self._invoice_rows(inv.invoice_id)) == 2]
+        if not candidates:
+            return False
+        self._duplicate(self.rng.choice(candidates), "E1")
+        self._finish()
         return True
 
     def inject_e2_partial_payment(self) -> bool:
-        """
-        E2: Missed/incomplete payment allocation.
-        A payment was made in full on payment document, but in the ledger only a partial amount was allocated,
-        leaving an unreconciled remainder on AR.
-        Discrepancy = omitted partial amount (payment.amount_minor - allocated_minor).
-        Evidence: [payment_doc_id, payment_ledger_row_ids].
-        """
-        candidates = [p for p in self.company.payments if p.amount_minor > 1000]
+        self._check_budget(1)
+        candidates = self._receipts()
         if not candidates:
             return False
-        pay = self.rng.choice(candidates)
-        # Find ledger rows for this payment
-        p_rows = [r for r in self.company.ledger if r.payment_id == pay.payment_id]
-        if len(p_rows) < 2:
-            return False
-
-        # Allocate only 60%
-        unallocated_amt = pay.amount_minor // 3
-        allocated_amt = pay.amount_minor - unallocated_amt
-
-        for r in p_rows:
-            if r.debit_minor > 0:
-                r.debit_minor = allocated_amt
-            if r.credit_minor > 0:
-                r.credit_minor = allocated_amt
-
-        issue_id = self._next_issue_id()
-        affected = [pay.payment_id] + [r.row_id for r in p_rows]
-        issue = TruthIssue(
-            issue_id=issue_id,
-            type="partial_payment",
-            affected_ids=affected,
-            expected_amount_minor=unallocated_amt,
-            currency=pay.currency,
-            acceptable_evidence_sets=[
-                [pay.doc_id] + [r.row_id for r in p_rows]
-            ]
+        pay, invoice = self.rng.choice(candidates)
+        rows = self._payment_rows(pay.payment_id)
+        before = {"scenario": "E2", "payment": pay.model_dump(), "rows": self._snapshots(rows)}
+        missing = pay.amount_minor // 3
+        allocated = pay.amount_minor - missing
+        for row in rows:
+            if row.debit_minor:
+                row.debit_minor = allocated
+            else:
+                row.credit_minor = allocated
+        self._record(
+            "partial_payment", [pay.payment_id] + [row.row_id for row in rows],
+            missing, pay.currency, [invoice.doc_id, pay.doc_id] + [row.row_id for row in rows],
+            f"E2: only {allocated} of payment {pay.payment_id} was allocated to receivables.",
+            before, {"scenario": "E2", "rows": self._snapshots(rows), "allocated_amount_minor": allocated},
         )
-        self.issues.append(issue)
-
-        change = ProvenanceChange(
-            issue_id=issue_id,
-            type="partial_payment",
-            affected_ids=affected,
-            expected_amount_minor=unallocated_amt,
-            currency=pay.currency,
-            acceptable_evidence_sets=issue.acceptable_evidence_sets,
-            description=f"Underallocated payment {pay.payment_id} in ledger by {unallocated_amt} {pay.currency}.",
-            before_state={"original_amount": pay.amount_minor},
-            after_state={"allocated_amount": allocated_amt}
-        )
-        self.changes.append(change)
+        self._reserved_invoices.add(invoice.invoice_id)
+        self._finish()
         return True
 
+    def _fx_settlement(
+        self, pay: PaymentDoc, invoice: InvoiceDoc, allocated: int,
+        scenario: str, boundary: bool,
+    ) -> tuple[list[LedgerRow], list[LedgerRow], Decimal, str, dict[str, Any]]:
+        source_rows = self._payment_rows(pay.payment_id)
+        before = {"scenario": scenario, "payment": pay.model_dump(), "rows": self._snapshots(source_rows)}
+        if boundary:
+            pay.timestamp = self.company.period_end
+        date = pay.timestamp[:10]
+        official = next(rate.rate for rate in self.company.fx_rates
+                        if rate.date == date and rate.source_currency == pay.currency
+                        and rate.target_currency == self.company.base_currency)
+        bad_rate = (official * Decimal("1.15")).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
+        base_amount = convert_fx(allocated, bad_rate)
+        # AR stays in the invoice's currency. FX clearing links source settlement
+        # to the base-currency bank receipt, with a balanced pair in each currency.
+        for row in source_rows:
+            row.timestamp = pay.timestamp
+            if row.debit_minor:
+                row.account = ACCOUNTS["FX_CLEARING"]
+                row.debit_minor = allocated
+            else:
+                row.credit_minor = allocated
+        base_rows = self.company._add_pair(
+            pay.timestamp, ACCOUNTS["CASH"], ACCOUNTS["FX_CLEARING"], base_amount,
+            self.company.base_currency, invoice.entity_id, invoice.invoice_id, pay.payment_id,
+        )
+        return source_rows, base_rows, official, str(bad_rate), before
+
+    def _record_fx(
+        self, pay: PaymentDoc, invoice: InvoiceDoc, source_rows: list[LedgerRow],
+        base_rows: list[LedgerRow], allocated: int, official: Decimal,
+        bad_rate: str, scenario: str, before: dict[str, Any],
+    ) -> None:
+        rows = source_rows + base_rows
+        actual = next(row.debit_minor for row in base_rows if row.account == ACCOUNTS["CASH"])
+        expected = convert_fx(allocated, official)
+        rate_id = fx_record_id(pay.timestamp[:10], pay.currency, self.company.base_currency)
+        self._record(
+            "wrong_fx_or_date", [pay.payment_id, invoice.invoice_id] + [row.row_id for row in rows],
+            abs(actual - expected), self.company.base_currency,
+            [invoice.doc_id, pay.doc_id] + [row.row_id for row in rows] + [rate_id],
+            f"{scenario}: converted allocated payment {pay.payment_id} using {bad_rate} instead of {official}.",
+            before, {"scenario": scenario, "payment": pay.model_dump(), "rows": self._snapshots(rows),
+                     "allocated_amount_minor": allocated, "official_rate": str(official),
+                     "bad_rate": bad_rate, "expected_base_minor": expected, "actual_base_minor": actual},
+        )
+
     def inject_e3_wrong_fx_or_date(self) -> bool:
-        """
-        E3: Wrong FX rate or date conversion.
-        A foreign currency transaction was booked using an arbitrary stale or manipulated rate,
-        causing discrepancy against the official fx.csv rate on transaction date.
-        """
-        # Find non-USD invoices
-        candidates = [inv for inv in self.company.invoices if inv.currency != "USD"]
+        self._check_budget(1)
+        candidates = self._receipts(foreign_only=True)
         if not candidates:
             return False
-        inv = self.rng.choice(candidates)
-        date_str = inv.issued_at[:10]
-
-        # Official rate in fx.csv
-        official_rate_rows = [f for f in self.company.fx_rates if f.date == date_str and f.source_currency == inv.currency and f.target_currency == "USD"]
-        if not official_rate_rows:
-            return False
-        official_rate = official_rate_rows[0].rate
-
-        # Fabricate faulty rate (+15% or -15%)
-        bad_rate = Decimal(str(round(float(official_rate) * 1.15, 4)))
-        expected_base = convert_fx(inv.total_minor, official_rate)
-        bad_base = convert_fx(inv.total_minor, bad_rate)
-        discrepancy = abs(bad_base - expected_base)
-
-        # Alter the ledger rows for this invoice to use bad converted base currency amount or note
-        # To show in ledger, we convert invoice AR/Revenue to base currency if not already or record the booking
-        rows = [r for r in self.company.ledger if r.invoice_id == inv.invoice_id and r.payment_id is None]
-        if not rows:
-            return False
-
-        for r in rows:
-            # Change currency to USD and use bad converted amount
-            r.currency = "USD"
-            if r.debit_minor > 0:
-                r.debit_minor = bad_base
-            if r.credit_minor > 0:
-                r.credit_minor = bad_base
-
-        issue_id = self._next_issue_id()
-        affected = [inv.invoice_id] + [r.row_id for r in rows]
-        issue = TruthIssue(
-            issue_id=issue_id,
-            type="wrong_fx_or_date",
-            affected_ids=affected,
-            expected_amount_minor=discrepancy,
-            currency="USD",
-            acceptable_evidence_sets=[
-                [inv.doc_id] + [r.row_id for r in rows]
-            ]
+        pay, invoice = self.rng.choice(candidates)
+        source, base, official, bad_rate, before = self._fx_settlement(
+            pay, invoice, pay.amount_minor, "E3", boundary=False,
         )
-        self.issues.append(issue)
-
-        change = ProvenanceChange(
-            issue_id=issue_id,
-            type="wrong_fx_or_date",
-            affected_ids=affected,
-            expected_amount_minor=discrepancy,
-            currency="USD",
-            acceptable_evidence_sets=issue.acceptable_evidence_sets,
-            description=f"Applied wrong FX rate {bad_rate} instead of {official_rate} for {inv.invoice_id}.",
-            before_state={"official_rate": str(official_rate), "expected_base": expected_base},
-            after_state={"bad_rate": str(bad_rate), "bad_base": bad_base}
-        )
-        self.changes.append(change)
+        self._record_fx(pay, invoice, source, base, pay.amount_minor, official, bad_rate, "E3", before)
+        self._reserved_invoices.add(invoice.invoice_id)
+        self._finish()
         return True
 
     def inject_e4_period_misclassification(self) -> bool:
-        """
-        E4: Period misclassification.
-        A transaction occurring outside the reporting period (e.g., Feb 2025) is improperly backdated
-        or recorded inside Jan 2025, or vice-versa.
-        Discrepancy = transaction amount.
-        """
-        # Pick an invoice issued near end of month
-        candidates = [inv for inv in self.company.invoices if inv.issued_at.startswith("2025-01-2")]
+        self._check_budget(1)
+        candidates = [inv for inv in self._invoices() if len(self._invoice_rows(inv.invoice_id)) == 2]
         if not candidates:
             return False
-        inv = self.rng.choice(candidates)
-        rows = [r for r in self.company.ledger if r.invoice_id == inv.invoice_id and r.payment_id is None]
-        if not rows:
-            return False
-
-        # Shift the document date to 2025-02-05 (outside period), while ledger remains in Jan
-        orig_inv_date = inv.issued_at
-        inv.issued_at = "2025-02-05T11:00:00+00:00"
-
-        issue_id = self._next_issue_id()
-        affected = [inv.invoice_id] + [r.row_id for r in rows]
-        issue = TruthIssue(
-            issue_id=issue_id,
-            type="period_misclassification",
-            affected_ids=affected,
-            expected_amount_minor=inv.total_minor,
-            currency=inv.currency,
-            acceptable_evidence_sets=[
-                [inv.doc_id] + [r.row_id for r in rows]
-            ]
+        invoice = self.rng.choice(candidates)
+        rows = self._invoice_rows(invoice.invoice_id)
+        before = {"scenario": "E4", "invoice": invoice.model_dump(), "rows": self._snapshots(rows)}
+        for row in rows:
+            row.timestamp = "2025-02-01T00:00:00+00:00"
+        self._record(
+            "period_misclassification", [invoice.invoice_id] + [row.row_id for row in rows],
+            invoice.total_minor, invoice.currency, [invoice.doc_id] + [row.row_id for row in rows],
+            f"E4: January invoice {invoice.invoice_id} was recognized in the following period.",
+            before, {"scenario": "E4", "rows": self._snapshots(rows)},
         )
-        self.issues.append(issue)
-
-        change = ProvenanceChange(
-            issue_id=issue_id,
-            type="period_misclassification",
-            affected_ids=affected,
-            expected_amount_minor=inv.total_minor,
-            currency=inv.currency,
-            acceptable_evidence_sets=issue.acceptable_evidence_sets,
-            description=f"Invoice {inv.invoice_id} belongs to February ({inv.issued_at}) but was recognized in January ledger.",
-            before_state={"doc_date": orig_inv_date},
-            after_state={"doc_date": inv.issued_at}
-        )
-        self.changes.append(change)
+        self._reserved_invoices.add(invoice.invoice_id)
+        self._finish()
         return True
 
     def inject_x1_partial_fx_period_boundary(self) -> bool:
-        """
-        X1: Interacting scenario 1.
-        Partial payment in foreign currency on period boundary.
-        Combines partial payment + foreign currency conversion difference.
-        """
-        # Pick a non-USD payment on 2025-01-30
-        candidates = [p for p in self.company.payments if p.currency != "USD" and p.amount_minor > 1000]
+        self._check_budget(2)
+        candidates = self._receipts(foreign_only=True)
         if not candidates:
             return False
-        pay = self.rng.choice(candidates)
-        rows = [r for r in self.company.ledger if r.payment_id == pay.payment_id]
-        if len(rows) < 2:
-            return False
-
-        # Allocate partial amount
-        unallocated_amt = pay.amount_minor // 2
-        allocated_amt = pay.amount_minor - unallocated_amt
-
-        for r in rows:
-            if r.debit_minor > 0:
-                r.debit_minor = allocated_amt
-            if r.credit_minor > 0:
-                r.credit_minor = allocated_amt
-
-        issue_id = self._next_issue_id()
-        affected = [pay.payment_id] + [r.row_id for r in rows]
-        issue = TruthIssue(
-            issue_id=issue_id,
-            type="partial_payment",
-            affected_ids=affected,
-            expected_amount_minor=unallocated_amt,
-            currency=pay.currency,
-            acceptable_evidence_sets=[
-                [pay.doc_id] + [r.row_id for r in rows]
-            ]
+        pay, invoice = self.rng.choice(candidates)
+        missing = pay.amount_minor // 2
+        allocated = pay.amount_minor - missing
+        source, base, official, bad_rate, before = self._fx_settlement(
+            pay, invoice, allocated, "X1", boundary=True,
         )
-        self.issues.append(issue)
-
-        change = ProvenanceChange(
-            issue_id=issue_id,
-            type="partial_payment",
-            affected_ids=affected,
-            expected_amount_minor=unallocated_amt,
-            currency=pay.currency,
-            acceptable_evidence_sets=issue.acceptable_evidence_sets,
-            description=f"Interacting scenario X1: unallocated foreign currency payment {pay.payment_id} near period boundary.",
-            before_state={"full_amount": pay.amount_minor},
-            after_state={"allocated": allocated_amt}
+        self._record(
+            "partial_payment", [pay.payment_id] + [row.row_id for row in source],
+            missing, pay.currency, [invoice.doc_id, pay.doc_id] + [row.row_id for row in source],
+            f"X1: partial source-currency allocation of {pay.payment_id} at the reporting boundary; its converted settlement also uses wrong FX.",
+            before, {"scenario": "X1", "payment": pay.model_dump(),
+                     "rows": self._snapshots(source), "allocated_amount_minor": allocated},
         )
-        self.changes.append(change)
+        self._record_fx(pay, invoice, source, base, allocated, official, bad_rate, "X1", before)
+        self._reserved_invoices.add(invoice.invoice_id)
+        self._finish()
         return True
 
     def inject_x2_duplicate_and_period(self) -> bool:
-        """
-        X2: Interacting scenario 2.
-        Duplicate entry AND period misclassification on same entity.
-        An invoice from next period was duplicated into current period.
-        """
-        success = self.inject_e1_duplicate_accounts()
-        if not success:
+        self._check_budget(2)
+        candidates = [inv for inv in self._invoices() if len(self._invoice_rows(inv.invoice_id)) == 2]
+        if not candidates:
             return False
-        # Also inject period misclassification on another invoice
-        success2 = self.inject_e4_period_misclassification()
-        return success2
+        invoice = self.rng.choice(candidates)
+        duplicates = self._duplicate(invoice, "X2")
+        before = {"scenario": "X2", "invoice": invoice.model_dump(), "rows": self._snapshots(duplicates)}
+        for row in duplicates:
+            row.timestamp = "2025-02-01T00:00:00+00:00"
+        self._record(
+            "period_misclassification", [invoice.invoice_id] + [row.row_id for row in duplicates],
+            invoice.total_minor, invoice.currency, [invoice.doc_id] + [row.row_id for row in duplicates],
+            f"X2: the duplicate recognition of {invoice.invoice_id} was posted to the following period.",
+            before, {"scenario": "X2", "rows": self._snapshots(duplicates)},
+        )
+        self._finish()
+        return True
 
-    def apply_errors(self, error_types: List[str]):
-        """Applies requested error types deterministically."""
-        for et in error_types:
-            if et == "E1" or et == "duplicate_accounts":
-                self.inject_e1_duplicate_accounts()
-            elif et == "E2" or et == "partial_payment":
-                self.inject_e2_partial_payment()
-            elif et == "E3" or et == "wrong_fx_or_date":
-                self.inject_e3_wrong_fx_or_date()
-            elif et == "E4" or et == "period_misclassification":
-                self.inject_e4_period_misclassification()
-            elif et == "X1":
-                self.inject_x1_partial_fx_period_boundary()
-            elif et == "X2":
-                self.inject_x2_duplicate_and_period()
-        # Sort ledger again deterministically
-        self.company.ledger.sort(key=lambda r: (r.timestamp, r.row_id))
-        self.company.manifest.n_records = len(self.company.ledger)
-        self.company.manifest.n_documents = len(self.company.invoices) + len(self.company.payments)
+    def apply_errors(self, error_types: list[str]) -> None:
+        """Apply a validated batch atomically; never silently drop an error.
+
+        The limit counts emitted issues (X1 and X2 each cost two), rather than
+        scenario names. Invalid requests and exhausted candidates leave the
+        company, RNG, truth and provenance unchanged.
+        """
+        if not isinstance(error_types, (list, tuple)):
+            raise ValueError("error_types must be a sequence of supported error names")
+        if any(not isinstance(name, str) or name not in _ERROR_ALIASES for name in error_types):
+            raise ValueError("Unknown error type")
+        normalized = [_ERROR_ALIASES[name] for name in error_types]
+        self._check_budget(sum(_ERROR_COST[name] for name in normalized))
+        methods = {
+            "E1": self.inject_e1_duplicate_accounts, "E2": self.inject_e2_partial_payment,
+            "E3": self.inject_e3_wrong_fx_or_date, "E4": self.inject_e4_period_misclassification,
+            "X1": self.inject_x1_partial_fx_period_boundary, "X2": self.inject_x2_duplicate_and_period,
+        }
+        company_state = copy.deepcopy(self.company.__dict__)
+        issue_state = copy.deepcopy((self.issues, self.changes, self._reserved_invoices))
+        random_state = self.rng.getstate()
+        issue_counter = self._issue_counter
+        try:
+            for name in normalized:
+                if not methods[name]():
+                    raise ValueError(f"No eligible untouched transaction for {name}")
+            self._finish()
+        except ValueError:
+            self.company.__dict__.clear()
+            self.company.__dict__.update(company_state)
+            self.issues, self.changes, self._reserved_invoices = issue_state
+            self.rng.setstate(random_state)
+            self._issue_counter = issue_counter
+            raise

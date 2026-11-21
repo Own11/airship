@@ -61,9 +61,15 @@ class InvoiceDoc(BaseModel):
     currency: str
     total_minor: int = Field(ge=0)
     line_items: List[InvoiceLineItem] = Field(default_factory=list)
+    document_type: Literal["invoice", "credit_note"] = "invoice"
+    related_invoice_id: Optional[str] = None
 
     @model_validator(mode="after")
     def validate_sum(self):
+        if self.document_type == "credit_note" and (
+            not self.related_invoice_id or self.related_invoice_id == self.invoice_id
+        ):
+            raise ValueError("A credit note must reference its original invoice")
         if self.line_items:
             s = sum(item.total_minor for item in self.line_items)
             if s != self.total_minor:
@@ -78,6 +84,7 @@ class PaymentDoc(BaseModel):
     currency: str
     amount_minor: int = Field(gt=0)
     invoice_refs: List[str] = Field(default_factory=list)
+    direction: Literal["receipt", "refund"] = "receipt"
 
 
 class FXRateRow(BaseModel):
@@ -188,8 +195,12 @@ class TruthIssue(BaseModel):
 
     @model_validator(mode="after")
     def validate_evidence_sets(self):
+        if not self.affected_ids:
+            raise ValueError("Truth issue must have non-empty affected_ids")
         if not self.acceptable_evidence_sets:
             raise ValueError(f"Truth issue {self.issue_id} must have at least one acceptable evidence set")
+        if any(not evidence or len(evidence) > 10 for evidence in self.acceptable_evidence_sets):
+            raise ValueError("Each truth evidence set must contain between one and ten IDs")
         return self
 
 
@@ -215,3 +226,6 @@ class ProvenanceFile(BaseModel):
     seed: int
     created_at: str
     changes: List[ProvenanceChange] = Field(default_factory=list)
+    generator_version: str = "1.0.0"
+    generation_config: Dict[str, Any] = Field(default_factory=dict)
+    error_types: List[str] = Field(default_factory=list)

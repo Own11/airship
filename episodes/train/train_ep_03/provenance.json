@@ -7,41 +7,139 @@
       "issue_id": "ISSUE-0001",
       "type": "duplicate_accounts",
       "affected_ids": [
-        "ROW-00245",
-        "ROW-00246",
-        "ROW-DUP-38167",
-        "ROW-DUP-20228",
-        "INV-2025-1058"
+        "INV-2025-1034",
+        "ROW-00165",
+        "ROW-00166",
+        "ROW-00215",
+        "ROW-00216"
       ],
-      "expected_amount_minor": 144000,
+      "expected_amount_minor": 803000,
       "currency": "EUR",
       "acceptable_evidence_sets": [
         [
-          "ROW-DUP-38167",
-          "ROW-DUP-20228",
-          "DOC-INV-00123"
-        ],
-        [
-          "ROW-DUP-38167",
-          "ROW-DUP-20228",
-          "ROW-00245",
-          "ROW-00246",
-          "DOC-INV-00123"
+          "DOC-INV-00083",
+          "ROW-00165",
+          "ROW-00166",
+          "ROW-00215",
+          "ROW-00216"
         ]
       ],
-      "description": "Cloned ledger rows for invoice INV-2025-1058 creating duplicate accounting entry.",
+      "description": "E1: duplicated the balanced recognition of INV-2025-1034.",
       "before_state": {
+        "scenario": "E1",
         "rows": [
-          "ROW-00245",
-          "ROW-00246"
-        ]
+          {
+            "row_id": "ROW-00165",
+            "timestamp": "2025-01-24T14:35:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 803000,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00166",
+            "timestamp": "2025-01-24T14:35:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 803000,
+            "currency": "EUR",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": null
+          }
+        ],
+        "invoice": {
+          "doc_id": "DOC-INV-00083",
+          "invoice_id": "INV-2025-1034",
+          "entity_id": "ENT-CYBER-DYNAMICS",
+          "issued_at": "2025-01-24T14:35:00+00:00",
+          "due_at": "2025-02-24T18:00:00+00:00",
+          "currency": "EUR",
+          "total_minor": 803000,
+          "line_items": [
+            {
+              "item_id": "ITEM-34-1",
+              "description": "Standard Goods & Services 1",
+              "quantity": 7,
+              "unit_price_minor": 21300,
+              "total_minor": 149100
+            },
+            {
+              "item_id": "ITEM-34-2",
+              "description": "Standard Goods & Services 2",
+              "quantity": 1,
+              "unit_price_minor": 65100,
+              "total_minor": 65100
+            },
+            {
+              "item_id": "ITEM-34-3",
+              "description": "Standard Goods & Services 3",
+              "quantity": 8,
+              "unit_price_minor": 73600,
+              "total_minor": 588800
+            }
+          ],
+          "document_type": "invoice",
+          "related_invoice_id": null
+        }
       },
       "after_state": {
-        "added_rows": [
-          "ROW-DUP-38167",
-          "ROW-DUP-20228"
+        "scenario": "E1",
+        "rows": [
+          {
+            "row_id": "ROW-00165",
+            "timestamp": "2025-01-24T14:35:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 803000,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00166",
+            "timestamp": "2025-01-24T14:35:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 803000,
+            "currency": "EUR",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00215",
+            "timestamp": "2025-01-24T14:35:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 803000,
+            "credit_minor": 0,
+            "currency": "EUR",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00216",
+            "timestamp": "2025-01-24T14:35:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 803000,
+            "currency": "EUR",
+            "entity_id": "ENT-CYBER-DYNAMICS",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": null
+          }
         ]
       }
     }
+  ],
+  "generator_version": "2.0.0",
+  "generation_config": {},
+  "error_types": [
+    "E1"
   ]
 }

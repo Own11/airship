@@ -7,39 +7,125 @@
       "issue_id": "ISSUE-0001",
       "type": "duplicate_accounts",
       "affected_ids": [
-        "ROW-00055",
-        "ROW-00056",
-        "ROW-DUP-91239",
-        "ROW-DUP-86190",
-        "INV-2025-1015"
+        "INV-2025-1017",
+        "ROW-00079",
+        "ROW-00080",
+        "ROW-00251",
+        "ROW-00252"
       ],
-      "expected_amount_minor": 484500,
-      "currency": "EUR",
+      "expected_amount_minor": 1115800,
+      "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "ROW-DUP-91239",
-          "ROW-DUP-86190",
-          "DOC-INV-00028"
-        ],
-        [
-          "ROW-DUP-91239",
-          "ROW-DUP-86190",
-          "ROW-00055",
-          "ROW-00056",
-          "DOC-INV-00028"
+          "DOC-INV-00040",
+          "ROW-00079",
+          "ROW-00080",
+          "ROW-00251",
+          "ROW-00252"
         ]
       ],
-      "description": "Cloned ledger rows for invoice INV-2025-1015 creating duplicate accounting entry.",
+      "description": "E1: duplicated the balanced recognition of INV-2025-1017.",
       "before_state": {
+        "scenario": "E1",
         "rows": [
-          "ROW-00055",
-          "ROW-00056"
-        ]
+          {
+            "row_id": "ROW-00079",
+            "timestamp": "2025-01-02T10:26:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 1115800,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1017",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00080",
+            "timestamp": "2025-01-02T10:26:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 1115800,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1017",
+            "payment_id": null
+          }
+        ],
+        "invoice": {
+          "doc_id": "DOC-INV-00040",
+          "invoice_id": "INV-2025-1017",
+          "entity_id": "ENT-ALPHA-NETWORKS",
+          "issued_at": "2025-01-02T10:26:00+00:00",
+          "due_at": "2025-02-02T18:00:00+00:00",
+          "currency": "USD",
+          "total_minor": 1115800,
+          "line_items": [
+            {
+              "item_id": "ITEM-17-1",
+              "description": "Standard Goods & Services 1",
+              "quantity": 6,
+              "unit_price_minor": 95200,
+              "total_minor": 571200
+            },
+            {
+              "item_id": "ITEM-17-2",
+              "description": "Standard Goods & Services 2",
+              "quantity": 7,
+              "unit_price_minor": 77800,
+              "total_minor": 544600
+            }
+          ],
+          "document_type": "invoice",
+          "related_invoice_id": null
+        }
       },
       "after_state": {
-        "added_rows": [
-          "ROW-DUP-91239",
-          "ROW-DUP-86190"
+        "scenario": "E1",
+        "rows": [
+          {
+            "row_id": "ROW-00079",
+            "timestamp": "2025-01-02T10:26:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 1115800,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1017",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00080",
+            "timestamp": "2025-01-02T10:26:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 1115800,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1017",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00251",
+            "timestamp": "2025-01-02T10:26:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 1115800,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1017",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00252",
+            "timestamp": "2025-01-02T10:26:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 1115800,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1017",
+            "payment_id": null
+          }
         ]
       }
     },
@@ -47,26 +133,93 @@
       "issue_id": "ISSUE-0002",
       "type": "partial_payment",
       "affected_ids": [
-        "PAY-2025-3104",
-        "ROW-00215",
-        "ROW-00216"
+        "PAY-2025-3075",
+        "ROW-00183",
+        "ROW-00184"
       ],
-      "expected_amount_minor": 249666,
+      "expected_amount_minor": 43083,
       "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "DOC-PAY-00108",
-          "ROW-00215",
-          "ROW-00216"
+          "DOC-INV-00090",
+          "DOC-PAY-00092",
+          "ROW-00183",
+          "ROW-00184"
         ]
       ],
-      "description": "Underallocated payment PAY-2025-3104 in ledger by 249666 USD.",
+      "description": "E2: only 86167 of payment PAY-2025-3075 was allocated to receivables.",
       "before_state": {
-        "original_amount": 749000
+        "scenario": "E2",
+        "payment": {
+          "doc_id": "DOC-PAY-00092",
+          "payment_id": "PAY-2025-3075",
+          "timestamp": "2025-01-07T14:00:00+00:00",
+          "currency": "USD",
+          "amount_minor": 129250,
+          "invoice_refs": [
+            "INV-2025-1037"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00183",
+            "timestamp": "2025-01-07T14:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 129250,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1037",
+            "payment_id": "PAY-2025-3075"
+          },
+          {
+            "row_id": "ROW-00184",
+            "timestamp": "2025-01-07T14:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 129250,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1037",
+            "payment_id": "PAY-2025-3075"
+          }
+        ]
       },
       "after_state": {
-        "allocated_amount": 499334
+        "scenario": "E2",
+        "rows": [
+          {
+            "row_id": "ROW-00183",
+            "timestamp": "2025-01-07T14:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 86167,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1037",
+            "payment_id": "PAY-2025-3075"
+          },
+          {
+            "row_id": "ROW-00184",
+            "timestamp": "2025-01-07T14:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 86167,
+            "currency": "USD",
+            "entity_id": "ENT-ALPHA-NETWORKS",
+            "invoice_id": "INV-2025-1037",
+            "payment_id": "PAY-2025-3075"
+          }
+        ],
+        "allocated_amount_minor": 86167
       }
     }
+  ],
+  "generator_version": "2.0.0",
+  "generation_config": {},
+  "error_types": [
+    "E1",
+    "E2"
   ]
 }

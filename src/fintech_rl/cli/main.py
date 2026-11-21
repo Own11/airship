@@ -57,7 +57,20 @@ def print_custom_help():
     print()
 
 
+def _configure_output_streams():
+    """Keep the Unicode CLI usable when Windows redirects legacy-encoded IO."""
+    for stream in (sys.stdout, sys.stderr):
+        encoding = getattr(stream, "encoding", None)
+        reconfigure = getattr(stream, "reconfigure", None)
+        if not isinstance(encoding, str) or not callable(reconfigure):
+            continue
+        if encoding.lower().replace("-", "").replace("_", "") in {"utf8", "utf8sig"}:
+            continue
+        reconfigure(encoding="utf-8")
+
+
 def main(argv=None):
+    _configure_output_streams()
     if argv is None:
         argv = sys.argv[1:]
 

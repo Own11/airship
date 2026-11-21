@@ -12,7 +12,7 @@ help:
 	@echo ""
 	@echo "$(CYAN)$(BOLD)Airship FinTech RL Environment Commands:$(RESET)"
 	@echo "  $(GREEN)make check$(RESET)        $(GRAY)- Run full verification pipeline (pytest + generate + benchmark)$(RESET)"
-	@echo "  $(GREEN)make test$(RESET)         $(GRAY)- Run 67 unit and contract tests via pytest$(RESET)"
+	@echo "  $(GREEN)make test$(RESET)         $(GRAY)- Run unit, integration and contract tests via pytest$(RESET)"
 	@echo "  $(GREEN)make demo$(RESET)         $(GRAY)- Run interactive step-by-step audit walkthrough$(RESET)"
 	@echo "  $(GREEN)make benchmark$(RESET)    $(GRAY)- Benchmark 4 policies across all 20 episodes$(RESET)"
 	@echo "  $(GREEN)make episodes$(RESET)     $(GRAY)- Re-generate 10 train and 10 dev episodes$(RESET)"

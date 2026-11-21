@@ -37,7 +37,7 @@ def create_initial_observation(
         remaining_steps=remaining_steps,
         task_description="Audit financial records and documents for discrepancies (duplicates, partial payments, FX errors, period errors). Submit findings with valid evidence.",
         manifest_summary=safe_manifest,
-        policy_summary=policy_data,
+        policy_summary={key: policy_data.get(key) for key in ("fx_rate_date_rule", "period_boundary_rule", "rounding")},
         action_result={"status": "episode_started"},
         error=None
     )
@@ -68,7 +68,7 @@ def create_step_observation(
         remaining_steps=remaining_steps,
         task_description="Audit financial records and documents for discrepancies.",
         manifest_summary=safe_manifest,
-        policy_summary=policy_data,
+        policy_summary={key: policy_data.get(key) for key in ("fx_rate_date_rule", "period_boundary_rule", "rounding")},
         action_result=action_result,
         error=error
     )

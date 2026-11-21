@@ -3,17 +3,149 @@
   "issues": [
     {
       "issue_id": "ISSUE-0001",
+      "type": "duplicate_accounts",
+      "affected_ids": [
+        "INV-2025-1032",
+        "ROW-00155",
+        "ROW-00156",
+        "ROW-00227",
+        "ROW-00228"
+      ],
+      "expected_amount_minor": 709700,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00078",
+          "ROW-00155",
+          "ROW-00156",
+          "ROW-00227",
+          "ROW-00228"
+        ]
+      ]
+    },
+    {
+      "issue_id": "ISSUE-0002",
       "type": "partial_payment",
       "affected_ids": [
-        "PAY-2025-2060",
-        "ROW-00233",
-        "ROW-00234"
+        "PAY-2025-2033",
+        "ROW-00161",
+        "ROW-00162"
       ],
-      "expected_amount_minor": 265266,
+      "expected_amount_minor": 294000,
       "currency": "EUR",
       "acceptable_evidence_sets": [
         [
-          "DOC-PAY-00117",
+          "DOC-INV-00080",
+          "DOC-PAY-00081",
+          "ROW-00161",
+          "ROW-00162"
+        ]
+      ]
+    },
+    {
+      "issue_id": "ISSUE-0003",
+      "type": "wrong_fx_or_date",
+      "affected_ids": [
+        "PAY-2025-3082",
+        "INV-2025-1041",
+        "ROW-00203",
+        "ROW-00204",
+        "ROW-00229",
+        "ROW-00230"
+      ],
+      "expected_amount_minor": 5763,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00101",
+          "DOC-PAY-00102",
+          "ROW-00203",
+          "ROW-00204",
+          "ROW-00229",
+          "ROW-00230",
+          "2025-01-07:GBP:USD"
+        ]
+      ]
+    },
+    {
+      "issue_id": "ISSUE-0004",
+      "type": "partial_payment",
+      "affected_ids": [
+        "PAY-2025-2004",
+        "ROW-00021",
+        "ROW-00022"
+      ],
+      "expected_amount_minor": 579300,
+      "currency": "GBP",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00010",
+          "DOC-PAY-00011",
+          "ROW-00021",
+          "ROW-00022"
+        ]
+      ]
+    },
+    {
+      "issue_id": "ISSUE-0005",
+      "type": "wrong_fx_or_date",
+      "affected_ids": [
+        "PAY-2025-2004",
+        "INV-2025-1004",
+        "ROW-00021",
+        "ROW-00022",
+        "ROW-00231",
+        "ROW-00232"
+      ],
+      "expected_amount_minor": 114644,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00010",
+          "DOC-PAY-00011",
+          "ROW-00021",
+          "ROW-00022",
+          "ROW-00231",
+          "ROW-00232",
+          "2025-01-31:GBP:USD"
+        ]
+      ]
+    },
+    {
+      "issue_id": "ISSUE-0006",
+      "type": "duplicate_accounts",
+      "affected_ids": [
+        "INV-2025-1039",
+        "ROW-00189",
+        "ROW-00190",
+        "ROW-00233",
+        "ROW-00234"
+      ],
+      "expected_amount_minor": 387000,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00095",
+          "ROW-00189",
+          "ROW-00190",
+          "ROW-00233",
+          "ROW-00234"
+        ]
+      ]
+    },
+    {
+      "issue_id": "ISSUE-0007",
+      "type": "period_misclassification",
+      "affected_ids": [
+        "INV-2025-1039",
+        "ROW-00233",
+        "ROW-00234"
+      ],
+      "expected_amount_minor": 387000,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00095",
           "ROW-00233",
           "ROW-00234"
         ]

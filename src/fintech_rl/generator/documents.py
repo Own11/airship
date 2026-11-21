@@ -18,18 +18,18 @@ def render_episode_files(
 
     # 1. manifest.json
     manifest_path = output_dir / "manifest.json"
-    with open(manifest_path, "w", encoding="utf-8") as f:
+    with open(manifest_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(company.manifest.model_dump(), f, indent=2)
 
     # 2. policy.json
     policy_path = output_dir / "policy.json"
-    with open(policy_path, "w", encoding="utf-8") as f:
+    with open(policy_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(company.policy.model_dump(), f, indent=2)
 
     # 3. fx.csv
     fx_path = output_dir / "fx.csv"
     with open(fx_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["date", "source_currency", "target_currency", "rate"])
         for fx in company.fx_rates:
             writer.writerow([fx.date, fx.source_currency, fx.target_currency, str(fx.rate)])
@@ -37,7 +37,7 @@ def render_episode_files(
     # 4. ledger.csv
     ledger_path = output_dir / "ledger.csv"
     with open(ledger_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow([
             "row_id", "timestamp", "account", "debit_minor", "credit_minor",
             "currency", "entity_id", "invoice_id", "payment_id"
@@ -45,29 +45,31 @@ def render_episode_files(
         for r in company.ledger:
             writer.writerow([
                 r.row_id, r.timestamp, r.account, r.debit_minor, r.credit_minor,
-                r.currency, r.entity_id or "", r.invoice_id or "", r.payment_id or ""
+                r.currency, r.entity_id if r.entity_id is not None else "null",
+                r.invoice_id if r.invoice_id is not None else "null",
+                r.payment_id if r.payment_id is not None else "null"
             ])
 
     # 5. invoices.jsonl
     inv_path = output_dir / "invoices.jsonl"
-    with open(inv_path, "w", encoding="utf-8") as f:
+    with open(inv_path, "w", encoding="utf-8", newline="\n") as f:
         for inv in company.invoices:
             f.write(json.dumps(inv.model_dump()) + "\n")
 
     # 6. payments.jsonl
     pay_path = output_dir / "payments.jsonl"
-    with open(pay_path, "w", encoding="utf-8") as f:
+    with open(pay_path, "w", encoding="utf-8", newline="\n") as f:
         for pay in company.payments:
             f.write(json.dumps(pay.model_dump()) + "\n")
 
     # 7. truth.json (evaluator only)
     truth_path = output_dir / "truth.json"
-    with open(truth_path, "w", encoding="utf-8") as f:
+    with open(truth_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(truth_file.model_dump(), f, indent=2)
 
     # 8. provenance.json (evaluator only)
     prov_path = output_dir / "provenance.json"
-    with open(prov_path, "w", encoding="utf-8") as f:
+    with open(prov_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(provenance_file.model_dump(), f, indent=2)
 
     return {

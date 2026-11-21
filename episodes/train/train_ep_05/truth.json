@@ -5,17 +5,24 @@
       "issue_id": "ISSUE-0001",
       "type": "wrong_fx_or_date",
       "affected_ids": [
-        "INV-2025-1029",
-        "ROW-00121",
-        "ROW-00122"
+        "PAY-2025-2031",
+        "INV-2025-1031",
+        "ROW-00157",
+        "ROW-00158",
+        "ROW-00245",
+        "ROW-00246"
       ],
-      "expected_amount_minor": 38396,
+      "expected_amount_minor": 97707,
       "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00061",
-          "ROW-00121",
-          "ROW-00122"
+          "DOC-INV-00078",
+          "DOC-PAY-00079",
+          "ROW-00157",
+          "ROW-00158",
+          "ROW-00245",
+          "ROW-00246",
+          "2025-01-23:EUR:USD"
         ]
       ]
     }

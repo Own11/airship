@@ -23,8 +23,9 @@ echo ""
 export PYTHONHASHSEED=0
 
 # 1. Run pytest
-echo -e "${PURPLE}${BOLD}[1/3]${RESET} ${BOLD}Running pytest test suite (67 unit & contract tests)...${RESET}"
-python3 -m pytest tests -v
+echo -e "${PURPLE}${BOLD}[1/3]${RESET} ${BOLD}Running pytest test suite (unit, integration & contract tests)...${RESET}"
+mkdir -p work
+python3 -m pytest tests -v --basetemp=work/pytest-check
 echo -e "${GREEN}✓ Pytest suite completed without errors.${RESET}"
 echo ""
 
@@ -39,6 +40,6 @@ PYTHONPATH=src python3 scripts/run_policies.py
 echo ""
 
 echo -e "${GREEN}${BOLD}================================================================${RESET}"
-echo -e "${GREEN}${BOLD}  ✓ ALL VERIFICATION CHECKS PASSED PERFECTLY (100% SUCCESS)    ${RESET}"
+echo -e "${GREEN}${BOLD}  ✓ ALL VERIFICATION CHECKS PASSED    ${RESET}"
 echo -e "${GREEN}${BOLD}================================================================${RESET}"
 echo ""

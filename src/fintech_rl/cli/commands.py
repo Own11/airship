@@ -8,6 +8,7 @@ import os
 import json
 import time
 import shutil
+import tempfile
 import subprocess
 from pathlib import Path
 from typing import List, Dict, Any, Optional
@@ -97,7 +98,8 @@ def cmd_demo(episode_id: Optional[str] = None):
         date_str = r.get("timestamp", "")[:10]
         debit_val = f"{r.get('debit_minor', 0) / 100:.2f}" if r.get('debit_minor') else "-"
         credit_val = f"{r.get('credit_minor', 0) / 100:.2f}" if r.get('credit_minor') else "-"
-        doc_ref = r.get("invoice_id") or r.get("payment_id") or "-"
+        doc_ref = next((r.get(key) for key in ("invoice_id", "payment_id")
+                                if r.get(key) not in (None, "", "null")), "-")
         table_rows.append([
             r.get("row_id", ""),
             date_str,
@@ -217,72 +219,80 @@ def cmd_benchmark(dataset: str = "all", out_trajectories: Optional[str] = None):
 
     print(f" {badge('EVALUATION', 'cyan')} Running 4 policies across {c_bold(len(all_eps))} episodes ({len(train_eps)} train + {len(dev_eps)} dev)...\n")
 
-    env = FinancialAuditEnv()
+    env = FinancialAuditEnv(mode="eval")
     summary_results = []
 
-    with open(traj_path, "w", encoding="utf-8") as traj_file:
-        for pol_key, pol_label, pol_factory in policies:
-            t_start = time.time()
-            total_p, total_r, total_f1, total_ret, total_steps = 0.0, 0.0, 0.0, 0.0, 0
-            n_eps = len(all_eps)
+    traj_path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".trajectory-", dir=traj_path.parent) as temp_dir:
+        staged_trajectory = Path(temp_dir) / "trajectories.jsonl"
+        with open(staged_trajectory, "w", encoding="utf-8", newline="\n") as traj_file:
+            for pol_key, pol_label, pol_factory in policies:
+                t_start = time.time()
+                total_p, total_r, total_f1, total_ret, total_steps = 0.0, 0.0, 0.0, 0.0, 0
+                n_eps = len(all_eps)
 
-            for idx, ep_dir in enumerate(all_eps, 1):
-                # Live progress bar
-                bar = render_progress_bar(idx, n_eps, width=22, label=f"{pol_key:<17} • {ep_dir.name}")
-                sys.stdout.write(f"\r  {bar}")
-                sys.stdout.flush()
+                for idx, ep_dir in enumerate(all_eps, 1):
+                    # Live progress bar
+                    bar = render_progress_bar(idx, n_eps, width=22, label=f"{pol_key:<17} • {ep_dir.name}")
+                    sys.stdout.write(f"\r  {bar}")
+                    sys.stdout.flush()
 
-                obs, info = env.reset(config={"episode_dir": ep_dir})
-                policy = pol_factory(ep_dir)
-                if hasattr(policy, "reset"):
-                    policy.reset()
+                    obs, info = env.reset(config={"episode_dir": ep_dir, "mode": "eval"})
+                    policy = pol_factory(ep_dir)
+                    if hasattr(policy, "reset"):
+                        policy.reset()
 
-                terminated, truncated = False, False
-                step = 0
-                final_reward = 0.0
-                final_metrics = {}
+                    terminated, truncated = False, False
+                    step = 0
+                    final_reward = 0.0
+                    final_metrics = {}
 
-                while not (terminated or truncated):
-                    step += 1
-                    action = policy.act(obs)
-                    next_obs, reward, terminated, truncated, step_info = env.step(action)
+                    while not (terminated or truncated):
+                        step += 1
+                        action = policy.act(obs)
+                        next_obs, reward, terminated, truncated, step_info = env.step(action)
 
-                    record = {
-                        "episode_id": info["episode_id"],
-                        "step": step,
-                        "action": action,
-                        "observation": next_obs,
-                        "reward": reward,
-                        "terminated": terminated,
-                        "truncated": truncated,
-                    }
-                    traj_file.write(json.dumps(record) + "\n")
+                        record = {
+                            "policy": pol_key,
+                            "episode_id": info["episode_id"],
+                            "step": step,
+                            "action": action,
+                            "observation": next_obs,
+                            "reward": reward,
+                            "terminated": terminated,
+                            "truncated": truncated,
+                        }
+                        # Oracle reads evaluator-only truth and must never enter public logs.
+                        if pol_key != "oracle":
+                            traj_file.write(json.dumps(record) + "\n")
 
-                    obs = next_obs
-                    final_reward = reward
-                    if "eval_metrics" in step_info:
-                        final_metrics = step_info["eval_metrics"]
+                        obs = next_obs
+                        # Only the harness reads evaluator metrics; policies see eval observations.
+                        final_reward = env.evaluator_reward
+                        final_metrics = env.evaluator_metrics
 
-                total_p += final_metrics.get("precision", 0.0)
-                total_r += final_metrics.get("recall", 0.0)
-                total_f1 += final_metrics.get("f1", 0.0)
-                total_ret += final_reward
-                total_steps += step
+                    total_p += final_metrics.get("precision", 0.0)
+                    total_r += final_metrics.get("recall", 0.0)
+                    total_f1 += final_metrics.get("f1", 0.0)
+                    total_ret += final_reward
+                    total_steps += step
 
-            elapsed = time.time() - t_start
-            sys.stdout.write("\r" + " " * 80 + "\r")  # Clear progress line
-            print(f"  {c_green('✓')} {c_bold(pol_label):<36} in {elapsed:.2f}s")
+                elapsed = time.time() - t_start
+                sys.stdout.write("\r" + " " * 80 + "\r")  # Clear progress line
+                print(f"  {c_green('✓')} {c_bold(pol_label):<36} in {elapsed:.2f}s")
 
-            summary_results.append({
-                "policy": pol_key,
-                "label": pol_label,
-                "P": total_p / n_eps,
-                "R": total_r / n_eps,
-                "F1": total_f1 / n_eps,
-                "return": total_ret / n_eps,
-                "avg_steps": total_steps / n_eps,
-                "total_time": elapsed,
-            })
+                summary_results.append({
+                    "policy": pol_key,
+                    "label": pol_label,
+                    "P": total_p / n_eps,
+                    "R": total_r / n_eps,
+                    "F1": total_f1 / n_eps,
+                    "return": total_ret / n_eps,
+                    "avg_steps": total_steps / n_eps,
+                    "total_time": elapsed,
+                })
+
+        os.replace(staged_trajectory, traj_path)
 
     print()
     # 1. Quality Diagnostics Table
@@ -331,90 +341,115 @@ def cmd_benchmark(dataset: str = "all", out_trajectories: Optional[str] = None):
 # ----------------------------------------------------------------------
 # 3. GENERATE COMMAND
 # ----------------------------------------------------------------------
-def cmd_generate():
-    """Generate the full benchmark dataset (10 train + 10 dev)."""
-    from fintech_rl.generator.company import SyntheticCompany
-    from fintech_rl.generator.errors import ErrorInjector
-    from fintech_rl.generator.provenance import create_provenance_file
+EPISODE_FILENAMES = (
+    "manifest.json", "policy.json", "ledger.csv", "fx.csv",
+    "invoices.jsonl", "payments.jsonl", "truth.json", "provenance.json",
+)
+
+# X1 and X2 each contribute two distinct issues under the E1-E4 schema.
+TRAIN_CONFIGS = [
+    ("train_ep_01", 101, []),
+    ("train_ep_02", 102, []),
+    ("train_ep_03", 103, ["E1"]),
+    ("train_ep_04", 104, ["E2"]),
+    ("train_ep_05", 105, ["E3"]),
+    ("train_ep_06", 106, ["E4"]),
+    ("train_ep_07", 107, ["E1", "E2"]),
+    ("train_ep_08", 108, ["E1", "E2", "E3"]),
+    ("train_ep_09", 109, ["X1", "X2"]),
+    ("train_ep_10", 110, ["X1", "E1", "E2", "E4"]),
+]
+DEV_CONFIGS = [
+    ("dev_ep_01", 201, []),
+    ("dev_ep_02", 202, []),
+    ("dev_ep_03", 203, []),
+    ("dev_ep_04", 204, ["E1", "E2", "E3", "E4", "X1"]),
+    ("dev_ep_05", 205, ["E1", "E2", "E3", "X1", "X2"]),
+    ("dev_ep_06", 206, ["E1", "E2", "E3", "E4", "X1", "X2"]),
+    ("dev_ep_07", 207, ["E1", "E2", "E3", "E4", "X1", "X2", "E1"]),
+    ("dev_ep_08", 208, ["E1", "E2", "E3", "E4", "X1", "X2", "E1", "E2"]),
+    ("dev_ep_09", 209, ["E1", "E2", "E3", "E4", "X1", "X2", "E1", "E2", "E3"]),
+    ("dev_ep_10", 210, ["E1", "E2", "E3", "E4", "X1", "X2", "E1", "E2", "E3", "E4"]),
+]
+
+
+def stage_episode(episode_id: str, seed: int, error_types: List[str], stage_dir: Path):
+    """Build and validate a candidate before touching any published artifact."""
+    from fintech_rl.generator.episode import generate_episode
     from fintech_rl.generator.documents import render_episode_files
-    from fintech_rl.schema import TruthFile
+    from fintech_rl.generator.validator import validate_episode_truth
 
+    company, truth, provenance = generate_episode(
+        seed=seed, episode_id=episode_id, error_types=error_types,
+    )
+    render_episode_files(company, truth, provenance, stage_dir)
+    errors = validate_episode_truth(stage_dir)
+    if errors:
+        raise ValueError(f"Episode {episode_id} failed validation: {'; '.join(errors)}")
+    return company, truth
+
+
+def publish_staged_episodes(staged_targets):
+    """Replace known artifacts only, with rollback on a filesystem failure.
+
+    Every candidate must already be validated. Existing team files in episode
+    directories are preserved. Backups stay in the caller's temporary stage.
+    """
+    replaced = []
+    try:
+        for stage_dir, target_dir in staged_targets:
+            target_dir.mkdir(parents=True, exist_ok=True)
+            backup_dir = stage_dir / "previous"
+            backup_dir.mkdir()
+            for filename in EPISODE_FILENAMES:
+                source, target = stage_dir / filename, target_dir / filename
+                if target.exists() and source.read_bytes() == target.read_bytes():
+                    continue
+                backup = backup_dir / filename if target.exists() else None
+                if backup is not None:
+                    shutil.copy2(target, backup)
+                os.replace(source, target)
+                replaced.append((target, backup))
+    except OSError:
+        for target, backup in reversed(replaced):
+            if backup is None:
+                target.unlink(missing_ok=True)
+            else:
+                os.replace(backup, target)
+        raise
+
+
+def cmd_generate():
+    """Validate all 20 deterministic candidates, then publish their artifacts."""
     print_banner()
-
     base_dir = get_episodes_dir()
-    train_configs = [
-        ("train_ep_01", 101, []),
-        ("train_ep_02", 102, []),
-        ("train_ep_03", 103, ["E1"]),
-        ("train_ep_04", 104, ["E2"]),
-        ("train_ep_05", 105, ["E3"]),
-        ("train_ep_06", 106, ["E4"]),
-        ("train_ep_07", 107, ["E1", "E2"]),
-        ("train_ep_08", 108, ["E3", "E4"]),
-        ("train_ep_09", 109, ["X1"]),
-        ("train_ep_10", 110, ["X2"]),
-    ]
-
-    dev_configs = [
-        ("dev_ep_01", 201, []),
-        ("dev_ep_02", 202, []),
-        ("dev_ep_03", 203, []),
-        ("dev_ep_04", 204, ["E1"]),
-        ("dev_ep_05", 205, ["E2"]),
-        ("dev_ep_06", 206, ["E3"]),
-        ("dev_ep_07", 207, ["E4"]),
-        ("dev_ep_08", 208, ["X1"]),
-        ("dev_ep_09", 209, ["X2"]),
-        ("dev_ep_10", 210, ["X1", "X2"]),
-    ]
-
-    total_episodes = len(train_configs) + len(dev_configs)
+    base_dir.mkdir(parents=True, exist_ok=True)
+    total_episodes = len(TRAIN_CONFIGS) + len(DEV_CONFIGS)
     print(f" {badge('SYNTHESIS', 'cyan')} Generating {c_bold(total_episodes)} deterministic audit episodes...\n")
-
     summary_rows = []
-    idx = 0
-
-    def run_gen(split: str, configs):
-        nonlocal idx
-        for ep_id, seed, errs in configs:
-            idx += 1
-            out_dir = base_dir / split / ep_id
-            if out_dir.exists():
-                shutil.rmtree(out_dir)
-            out_dir.mkdir(parents=True, exist_ok=True)
-
-            company = SyntheticCompany(seed=seed, episode_id=ep_id)
-            company.generate()
-
-            injector = ErrorInjector(company=company, seed=seed)
-            injector.apply_errors(errs)
-
-            truth = TruthFile(episode_id=ep_id, issues=injector.issues)
-            prov = create_provenance_file(episode_id=ep_id, seed=seed, changes=injector.changes)
-            render_episode_files(company, truth, prov, out_dir)
-
-            err_tag = ", ".join(errs) if errs else "CLEAN"
-            err_styled = c_green(err_tag) if not errs else c_yellow(err_tag)
-            summary_rows.append([
-                split.upper(),
-                ep_id,
-                seed,
-                f"{len(company.ledger):>4} rows",
-                err_styled,
-                f"{len(truth.issues)} issue(s)",
-            ])
-
-            bar = render_progress_bar(idx, total_episodes, width=22, label=f"{split}/{ep_id}")
-            sys.stdout.write(f"\r  {bar}")
-            sys.stdout.flush()
-
-    run_gen("train", train_configs)
-    run_gen("dev", dev_configs)
+    staged_targets = []
+    with tempfile.TemporaryDirectory(prefix=".staging-", dir=base_dir) as temp_dir:
+        staging_root = Path(temp_dir)
+        idx = 0
+        for split, configs in (("train", TRAIN_CONFIGS), ("dev", DEV_CONFIGS)):
+            for ep_id, seed, errs in configs:
+                idx += 1
+                stage_dir = staging_root / split / ep_id
+                company, truth = stage_episode(ep_id, seed, errs, stage_dir)
+                staged_targets.append((stage_dir, base_dir / split / ep_id))
+                err_tag = ", ".join(errs) if errs else "CLEAN"
+                summary_rows.append([
+                    split.upper(), ep_id, seed, f"{len(company.ledger):>4} rows",
+                    c_green(err_tag) if not errs else c_yellow(err_tag),
+                    f"{len(truth.issues)} issue(s)",
+                ])
+                bar = render_progress_bar(idx, total_episodes, width=22, label=f"{split}/{ep_id}")
+                sys.stdout.write(f"\r  {bar}")
+                sys.stdout.flush()
+        publish_staged_episodes(staged_targets)
     sys.stdout.write("\r" + " " * 80 + "\r")
-
     headers = ["SPLIT", "EPISODE ID", "SEED", "LEDGER", "INJECTED ERRORS", "GROUND TRUTH"]
     print_table(headers, summary_rows, alignments=["<", "<", ">", ">", "<", ">"], title="DATASET EPISODE REGISTRY")
-
     print(f"\n {badge('COMPLETE', 'green')} All 20 episodes rendered at {c_cyan(str(base_dir))}\n")
     return 0
 
@@ -465,7 +500,8 @@ def cmd_inspect(episode_id: str, table: str = "manifest", limit: int = 15, show_
                     break
                 d_val = f"{int(r.get('debit_minor', 0)) / 100:.2f}" if int(r.get('debit_minor', 0) or 0) > 0 else "-"
                 c_val = f"{int(r.get('credit_minor', 0)) / 100:.2f}" if int(r.get('credit_minor', 0) or 0) > 0 else "-"
-                doc_ref = r.get("invoice_id") or r.get("payment_id") or "-"
+                doc_ref = next((r.get(key) for key in ("invoice_id", "payment_id")
+                                if r.get(key) not in (None, "", "null")), "-")
                 rows.append([
                     r.get("row_id", ""),
                     r.get("timestamp", "")[:10],
@@ -514,7 +550,7 @@ def cmd_inspect(episode_id: str, table: str = "manifest", limit: int = 15, show_
             desc = (
                 f"Issue ID         : {iss.get('issue_id')}\n"
                 f"Error Type       : {c_yellow(iss.get('type'))}\n"
-                f"True Amount      : {iss.get('claimed_amount_minor')} {iss.get('currency')}\n"
+                f"True Amount      : {iss.get('expected_amount_minor')} {iss.get('currency')}\n"
                 f"Affected IDs     : {iss.get('affected_ids')}\n"
                 f"Evidence Sets    : {iss.get('acceptable_evidence_sets')}\n"
                 f"Explanation      : {iss.get('explanation')}"
@@ -675,8 +711,12 @@ def cmd_check():
     print(c_cyan(divider("VERIFICATION PIPELINE START", width=w)))
 
     # Step 1: pytest
-    print(f"\n{badge('[1/3]', 'sky')} {c_bold('Running 67 unit & contract tests (pytest)...')}")
-    p1 = subprocess.run([sys.executable, "-m", "pytest", "tests", "-v"], cwd=ROOT_DIR)
+    print(f"\n{badge('[1/3]', 'sky')} {c_bold('Running unit, integration & contract tests (pytest)...')}")
+    (ROOT_DIR / "work").mkdir(exist_ok=True)
+    p1 = subprocess.run(
+        [sys.executable, "-m", "pytest", "tests", "-v", "--basetemp=work/pytest-check"],
+        cwd=ROOT_DIR,
+    )
     if p1.returncode != 0:
         print(f"\n{badge_fail()} Pytest suite failed!")
         return p1.returncode
@@ -693,6 +733,6 @@ def cmd_check():
     if r3 != 0:
         return r3
 
-    print(c_green(divider("ALL VERIFICATION CHECKS PASSED PERFECTLY", width=w)))
-    print(f"\n {badge_pass()} System integrity and reproducibility confirmed 100%.\n")
+    print(c_green(divider("ALL VERIFICATION CHECKS PASSED", width=w)))
+    print(f"\n {badge_pass()} Verification pipeline completed successfully.\n")
     return 0

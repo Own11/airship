@@ -7,26 +7,92 @@
       "issue_id": "ISSUE-0001",
       "type": "partial_payment",
       "affected_ids": [
-        "PAY-2025-3002",
-        "ROW-00007",
-        "ROW-00008"
+        "PAY-2025-3001",
+        "ROW-00005",
+        "ROW-00006"
       ],
-      "expected_amount_minor": 192666,
-      "currency": "EUR",
+      "expected_amount_minor": 23166,
+      "currency": "GBP",
       "acceptable_evidence_sets": [
         [
-          "DOC-PAY-00004",
-          "ROW-00007",
-          "ROW-00008"
+          "DOC-INV-00001",
+          "DOC-PAY-00003",
+          "ROW-00005",
+          "ROW-00006"
         ]
       ],
-      "description": "Underallocated payment PAY-2025-3002 in ledger by 192666 EUR.",
+      "description": "E2: only 46334 of payment PAY-2025-3001 was allocated to receivables.",
       "before_state": {
-        "original_amount": 578000
+        "scenario": "E2",
+        "payment": {
+          "doc_id": "DOC-PAY-00003",
+          "payment_id": "PAY-2025-3001",
+          "timestamp": "2025-01-07T14:00:00+00:00",
+          "currency": "GBP",
+          "amount_minor": 69500,
+          "invoice_refs": [
+            "INV-2025-1000"
+          ],
+          "direction": "receipt"
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00005",
+            "timestamp": "2025-01-07T14:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 69500,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-AURORA-LOGISTICS",
+            "invoice_id": "INV-2025-1000",
+            "payment_id": "PAY-2025-3001"
+          },
+          {
+            "row_id": "ROW-00006",
+            "timestamp": "2025-01-07T14:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 69500,
+            "currency": "GBP",
+            "entity_id": "ENT-AURORA-LOGISTICS",
+            "invoice_id": "INV-2025-1000",
+            "payment_id": "PAY-2025-3001"
+          }
+        ]
       },
       "after_state": {
-        "allocated_amount": 385334
+        "scenario": "E2",
+        "rows": [
+          {
+            "row_id": "ROW-00005",
+            "timestamp": "2025-01-07T14:00:00+00:00",
+            "account": "1010-CASH",
+            "debit_minor": 46334,
+            "credit_minor": 0,
+            "currency": "GBP",
+            "entity_id": "ENT-AURORA-LOGISTICS",
+            "invoice_id": "INV-2025-1000",
+            "payment_id": "PAY-2025-3001"
+          },
+          {
+            "row_id": "ROW-00006",
+            "timestamp": "2025-01-07T14:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 0,
+            "credit_minor": 46334,
+            "currency": "GBP",
+            "entity_id": "ENT-AURORA-LOGISTICS",
+            "invoice_id": "INV-2025-1000",
+            "payment_id": "PAY-2025-3001"
+          }
+        ],
+        "allocated_amount_minor": 46334
       }
     }
+  ],
+  "generator_version": "2.0.0",
+  "generation_config": {},
+  "error_types": [
+    "E2"
   ]
 }

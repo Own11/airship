@@ -5,26 +5,21 @@
       "issue_id": "ISSUE-0001",
       "type": "duplicate_accounts",
       "affected_ids": [
-        "ROW-00055",
-        "ROW-00056",
-        "ROW-DUP-91239",
-        "ROW-DUP-86190",
-        "INV-2025-1015"
+        "INV-2025-1017",
+        "ROW-00079",
+        "ROW-00080",
+        "ROW-00251",
+        "ROW-00252"
       ],
-      "expected_amount_minor": 484500,
-      "currency": "EUR",
+      "expected_amount_minor": 1115800,
+      "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "ROW-DUP-91239",
-          "ROW-DUP-86190",
-          "DOC-INV-00028"
-        ],
-        [
-          "ROW-DUP-91239",
-          "ROW-DUP-86190",
-          "ROW-00055",
-          "ROW-00056",
-          "DOC-INV-00028"
+          "DOC-INV-00040",
+          "ROW-00079",
+          "ROW-00080",
+          "ROW-00251",
+          "ROW-00252"
         ]
       ]
     },
@@ -32,17 +27,18 @@
       "issue_id": "ISSUE-0002",
       "type": "partial_payment",
       "affected_ids": [
-        "PAY-2025-3104",
-        "ROW-00215",
-        "ROW-00216"
+        "PAY-2025-3075",
+        "ROW-00183",
+        "ROW-00184"
       ],
-      "expected_amount_minor": 249666,
+      "expected_amount_minor": 43083,
       "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "DOC-PAY-00108",
-          "ROW-00215",
-          "ROW-00216"
+          "DOC-INV-00090",
+          "DOC-PAY-00092",
+          "ROW-00183",
+          "ROW-00184"
         ]
       ]
     }

@@ -7,26 +7,99 @@
       "issue_id": "ISSUE-0001",
       "type": "period_misclassification",
       "affected_ids": [
-        "INV-2025-1067",
-        "ROW-00257",
-        "ROW-00258"
+        "INV-2025-1034",
+        "ROW-00155",
+        "ROW-00156"
       ],
-      "expected_amount_minor": 1142300,
-      "currency": "GBP",
+      "expected_amount_minor": 173200,
+      "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00129",
-          "ROW-00257",
-          "ROW-00258"
+          "DOC-INV-00078",
+          "ROW-00155",
+          "ROW-00156"
         ]
       ],
-      "description": "Invoice INV-2025-1067 belongs to February (2025-02-05T11:00:00+00:00) but was recognized in January ledger.",
+      "description": "E4: January invoice INV-2025-1034 was recognized in the following period.",
       "before_state": {
-        "doc_date": "2025-01-25T17:43:00+00:00"
+        "scenario": "E4",
+        "invoice": {
+          "doc_id": "DOC-INV-00078",
+          "invoice_id": "INV-2025-1034",
+          "entity_id": "ENT-NEXUS-CORP",
+          "issued_at": "2025-01-10T13:24:00+00:00",
+          "due_at": "2025-02-10T18:00:00+00:00",
+          "currency": "USD",
+          "total_minor": 173200,
+          "line_items": [
+            {
+              "item_id": "ITEM-34-1",
+              "description": "Standard Goods & Services 1",
+              "quantity": 2,
+              "unit_price_minor": 86600,
+              "total_minor": 173200
+            }
+          ],
+          "document_type": "invoice",
+          "related_invoice_id": null
+        },
+        "rows": [
+          {
+            "row_id": "ROW-00155",
+            "timestamp": "2025-01-10T13:24:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 173200,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00156",
+            "timestamp": "2025-01-10T13:24:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 173200,
+            "currency": "USD",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": null
+          }
+        ]
       },
       "after_state": {
-        "doc_date": "2025-02-05T11:00:00+00:00"
+        "scenario": "E4",
+        "rows": [
+          {
+            "row_id": "ROW-00155",
+            "timestamp": "2025-02-01T00:00:00+00:00",
+            "account": "1200-ACCOUNTS-RECEIVABLE",
+            "debit_minor": 173200,
+            "credit_minor": 0,
+            "currency": "USD",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": null
+          },
+          {
+            "row_id": "ROW-00156",
+            "timestamp": "2025-02-01T00:00:00+00:00",
+            "account": "4010-SALES-REVENUE",
+            "debit_minor": 0,
+            "credit_minor": 173200,
+            "currency": "USD",
+            "entity_id": "ENT-NEXUS-CORP",
+            "invoice_id": "INV-2025-1034",
+            "payment_id": null
+          }
+        ]
       }
     }
+  ],
+  "generator_version": "2.0.0",
+  "generation_config": {},
+  "error_types": [
+    "E4"
   ]
 }

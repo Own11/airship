@@ -1,63 +1,50 @@
-{"doc_id": "DOC-PAY-00002", "payment_id": "PAY-2025-3000", "timestamp": "2025-01-08T10:00:00+00:00", "currency": "EUR", "amount_minor": 436500, "invoice_refs": ["INV-2025-1000"]}
-{"doc_id": "DOC-PAY-00003", "payment_id": "PAY-2025-3001", "timestamp": "2025-01-10T14:00:00+00:00", "currency": "EUR", "amount_minor": 436500, "invoice_refs": ["INV-2025-1000"]}
-{"doc_id": "DOC-PAY-00005", "payment_id": "PAY-2025-2001", "timestamp": "2025-01-24T10:24:00+00:00", "currency": "USD", "amount_minor": 807400, "invoice_refs": ["INV-2025-1001"]}
-{"doc_id": "DOC-PAY-00007", "payment_id": "PAY-2025-2002", "timestamp": "2025-01-15T12:19:00+00:00", "currency": "USD", "amount_minor": 168800, "invoice_refs": ["INV-2025-1002"]}
-{"doc_id": "DOC-PAY-00009", "payment_id": "PAY-2025-3006", "timestamp": "2025-01-13T10:00:00+00:00", "currency": "EUR", "amount_minor": 248400, "invoice_refs": ["INV-2025-1003"]}
-{"doc_id": "DOC-PAY-00010", "payment_id": "PAY-2025-3007", "timestamp": "2025-01-15T14:00:00+00:00", "currency": "EUR", "amount_minor": 248400, "invoice_refs": ["INV-2025-1003"]}
-{"doc_id": "DOC-PAY-00012", "payment_id": "PAY-2025-2004", "timestamp": "2025-01-11T08:39:00+00:00", "currency": "GBP", "amount_minor": 508000, "invoice_refs": ["INV-2025-1004"]}
-{"doc_id": "DOC-PAY-00014", "payment_id": "PAY-2025-3010", "timestamp": "2025-01-11T10:00:00+00:00", "currency": "USD", "amount_minor": 349550, "invoice_refs": ["INV-2025-1005"]}
-{"doc_id": "DOC-PAY-00015", "payment_id": "PAY-2025-3011", "timestamp": "2025-01-13T14:00:00+00:00", "currency": "USD", "amount_minor": 349550, "invoice_refs": ["INV-2025-1005"]}
-{"doc_id": "DOC-PAY-00017", "payment_id": "PAY-2025-2006", "timestamp": "2025-01-09T14:25:00+00:00", "currency": "USD", "amount_minor": 325600, "invoice_refs": ["INV-2025-1006"]}
-{"doc_id": "DOC-PAY-00020", "payment_id": "PAY-2025-2008", "timestamp": "2025-01-28T09:31:00+00:00", "currency": "EUR", "amount_minor": 1101100, "invoice_refs": ["INV-2025-1008"]}
-{"doc_id": "DOC-PAY-00022", "payment_id": "PAY-2025-2009", "timestamp": "2025-01-21T12:45:00+00:00", "currency": "EUR", "amount_minor": 200000, "invoice_refs": ["INV-2025-1009"]}
-{"doc_id": "DOC-PAY-00024", "payment_id": "PAY-2025-3020", "timestamp": "2025-01-17T10:00:00+00:00", "currency": "USD", "amount_minor": 658400, "invoice_refs": ["INV-2025-1010"]}
-{"doc_id": "DOC-PAY-00025", "payment_id": "PAY-2025-3021", "timestamp": "2025-01-19T14:00:00+00:00", "currency": "USD", "amount_minor": 658400, "invoice_refs": ["INV-2025-1010"]}
-{"doc_id": "DOC-PAY-00027", "payment_id": "PAY-2025-2011", "timestamp": "2025-01-25T10:26:00+00:00", "currency": "USD", "amount_minor": 603000, "invoice_refs": ["INV-2025-1011"]}
-{"doc_id": "DOC-PAY-00029", "payment_id": "PAY-2025-3024", "timestamp": "2025-01-15T10:00:00+00:00", "currency": "USD", "amount_minor": 374850, "invoice_refs": ["INV-2025-1012"]}
-{"doc_id": "DOC-PAY-00030", "payment_id": "PAY-2025-3025", "timestamp": "2025-01-17T14:00:00+00:00", "currency": "USD", "amount_minor": 374850, "invoice_refs": ["INV-2025-1012"]}
-{"doc_id": "DOC-PAY-00032", "payment_id": "PAY-2025-2013", "timestamp": "2025-01-12T15:25:00+00:00", "currency": "EUR", "amount_minor": 589600, "invoice_refs": ["INV-2025-1013"]}
-{"doc_id": "DOC-PAY-00034", "payment_id": "PAY-2025-2014", "timestamp": "2025-01-27T13:32:00+00:00", "currency": "USD", "amount_minor": 815100, "invoice_refs": ["INV-2025-1014"]}
-{"doc_id": "DOC-PAY-00039", "payment_id": "PAY-2025-2018", "timestamp": "2025-01-22T12:28:00+00:00", "currency": "USD", "amount_minor": 354600, "invoice_refs": ["INV-2025-1018"]}
-{"doc_id": "DOC-PAY-00042", "payment_id": "PAY-2025-3040", "timestamp": "2025-01-21T10:00:00+00:00", "currency": "GBP", "amount_minor": 59850, "invoice_refs": ["INV-2025-1020"]}
-{"doc_id": "DOC-PAY-00043", "payment_id": "PAY-2025-3041", "timestamp": "2025-01-23T14:00:00+00:00", "currency": "GBP", "amount_minor": 59850, "invoice_refs": ["INV-2025-1020"]}
-{"doc_id": "DOC-PAY-00047", "payment_id": "PAY-2025-2023", "timestamp": "2025-01-12T08:30:00+00:00", "currency": "USD", "amount_minor": 700100, "invoice_refs": ["INV-2025-1023"]}
-{"doc_id": "DOC-PAY-00049", "payment_id": "PAY-2025-3048", "timestamp": "2025-01-10T10:00:00+00:00", "currency": "EUR", "amount_minor": 357250, "invoice_refs": ["INV-2025-1024"]}
-{"doc_id": "DOC-PAY-00050", "payment_id": "PAY-2025-3049", "timestamp": "2025-01-12T14:00:00+00:00", "currency": "EUR", "amount_minor": 357250, "invoice_refs": ["INV-2025-1024"]}
-{"doc_id": "DOC-PAY-00052", "payment_id": "PAY-2025-2025", "timestamp": "2025-01-29T08:41:00+00:00", "currency": "GBP", "amount_minor": 380600, "invoice_refs": ["INV-2025-1025"]}
-{"doc_id": "DOC-PAY-00054", "payment_id": "PAY-2025-2026", "timestamp": "2025-01-28T17:44:00+00:00", "currency": "EUR", "amount_minor": 366400, "invoice_refs": ["INV-2025-1026"]}
-{"doc_id": "DOC-PAY-00056", "payment_id": "PAY-2025-2027", "timestamp": "2025-01-09T13:19:00+00:00", "currency": "USD", "amount_minor": 229200, "invoice_refs": ["INV-2025-1027"]}
-{"doc_id": "DOC-PAY-00058", "payment_id": "PAY-2025-2028", "timestamp": "2025-01-09T12:33:00+00:00", "currency": "EUR", "amount_minor": 1086700, "invoice_refs": ["INV-2025-1028"]}
-{"doc_id": "DOC-PAY-00060", "payment_id": "PAY-2025-2029", "timestamp": "2025-01-09T08:17:00+00:00", "currency": "EUR", "amount_minor": 1682800, "invoice_refs": ["INV-2025-1029"]}
-{"doc_id": "DOC-PAY-00063", "payment_id": "PAY-2025-2031", "timestamp": "2025-01-21T15:33:00+00:00", "currency": "USD", "amount_minor": 917400, "invoice_refs": ["INV-2025-1031"]}
-{"doc_id": "DOC-PAY-00065", "payment_id": "PAY-2025-2032", "timestamp": "2025-01-30T14:22:00+00:00", "currency": "USD", "amount_minor": 720100, "invoice_refs": ["INV-2025-1032"]}
-{"doc_id": "DOC-PAY-00069", "payment_id": "PAY-2025-2035", "timestamp": "2025-01-10T13:50:00+00:00", "currency": "USD", "amount_minor": 1020100, "invoice_refs": ["INV-2025-1035"]}
-{"doc_id": "DOC-PAY-00073", "payment_id": "PAY-2025-2038", "timestamp": "2025-01-18T16:11:00+00:00", "currency": "EUR", "amount_minor": 852000, "invoice_refs": ["INV-2025-1038"]}
-{"doc_id": "DOC-PAY-00075", "payment_id": "PAY-2025-3078", "timestamp": "2025-01-08T10:00:00+00:00", "currency": "GBP", "amount_minor": 400150, "invoice_refs": ["INV-2025-1039"]}
-{"doc_id": "DOC-PAY-00076", "payment_id": "PAY-2025-3079", "timestamp": "2025-01-10T14:00:00+00:00", "currency": "GBP", "amount_minor": 400150, "invoice_refs": ["INV-2025-1039"]}
-{"doc_id": "DOC-PAY-00078", "payment_id": "PAY-2025-3080", "timestamp": "2025-01-04T10:00:00+00:00", "currency": "USD", "amount_minor": 30800, "invoice_refs": ["INV-2025-1040"]}
-{"doc_id": "DOC-PAY-00079", "payment_id": "PAY-2025-3081", "timestamp": "2025-01-06T14:00:00+00:00", "currency": "USD", "amount_minor": 30800, "invoice_refs": ["INV-2025-1040"]}
-{"doc_id": "DOC-PAY-00081", "payment_id": "PAY-2025-2041", "timestamp": "2025-01-28T14:14:00+00:00", "currency": "EUR", "amount_minor": 478400, "invoice_refs": ["INV-2025-1041"]}
-{"doc_id": "DOC-PAY-00084", "payment_id": "PAY-2025-3086", "timestamp": "2025-01-28T10:00:00+00:00", "currency": "GBP", "amount_minor": 96850, "invoice_refs": ["INV-2025-1043"]}
-{"doc_id": "DOC-PAY-00085", "payment_id": "PAY-2025-3087", "timestamp": "2025-01-30T14:00:00+00:00", "currency": "GBP", "amount_minor": 96850, "invoice_refs": ["INV-2025-1043"]}
-{"doc_id": "DOC-PAY-00088", "payment_id": "PAY-2025-3090", "timestamp": "2025-01-21T10:00:00+00:00", "currency": "GBP", "amount_minor": 686300, "invoice_refs": ["INV-2025-1045"]}
-{"doc_id": "DOC-PAY-00089", "payment_id": "PAY-2025-3091", "timestamp": "2025-01-23T14:00:00+00:00", "currency": "GBP", "amount_minor": 686300, "invoice_refs": ["INV-2025-1045"]}
-{"doc_id": "DOC-PAY-00091", "payment_id": "PAY-2025-3092", "timestamp": "2025-01-05T10:00:00+00:00", "currency": "EUR", "amount_minor": 28250, "invoice_refs": ["INV-2025-1046"]}
-{"doc_id": "DOC-PAY-00092", "payment_id": "PAY-2025-3093", "timestamp": "2025-01-07T14:00:00+00:00", "currency": "EUR", "amount_minor": 28250, "invoice_refs": ["INV-2025-1046"]}
-{"doc_id": "DOC-PAY-00096", "payment_id": "PAY-2025-2049", "timestamp": "2025-01-09T08:23:00+00:00", "currency": "GBP", "amount_minor": 733400, "invoice_refs": ["INV-2025-1049"]}
-{"doc_id": "DOC-PAY-00099", "payment_id": "PAY-2025-3102", "timestamp": "2025-01-14T10:00:00+00:00", "currency": "EUR", "amount_minor": 488150, "invoice_refs": ["INV-2025-1051"]}
-{"doc_id": "DOC-PAY-00100", "payment_id": "PAY-2025-3103", "timestamp": "2025-01-16T14:00:00+00:00", "currency": "EUR", "amount_minor": 488150, "invoice_refs": ["INV-2025-1051"]}
-{"doc_id": "DOC-PAY-00102", "payment_id": "PAY-2025-2052", "timestamp": "2025-01-25T14:11:00+00:00", "currency": "GBP", "amount_minor": 1190100, "invoice_refs": ["INV-2025-1052"]}
-{"doc_id": "DOC-PAY-00105", "payment_id": "PAY-2025-3108", "timestamp": "2025-01-16T10:00:00+00:00", "currency": "USD", "amount_minor": 138000, "invoice_refs": ["INV-2025-1054"]}
-{"doc_id": "DOC-PAY-00106", "payment_id": "PAY-2025-3109", "timestamp": "2025-01-18T14:00:00+00:00", "currency": "USD", "amount_minor": 138000, "invoice_refs": ["INV-2025-1054"]}
-{"doc_id": "DOC-PAY-00108", "payment_id": "PAY-2025-3110", "timestamp": "2025-01-11T10:00:00+00:00", "currency": "GBP", "amount_minor": 165550, "invoice_refs": ["INV-2025-1055"]}
-{"doc_id": "DOC-PAY-00109", "payment_id": "PAY-2025-3111", "timestamp": "2025-01-13T14:00:00+00:00", "currency": "GBP", "amount_minor": 165550, "invoice_refs": ["INV-2025-1055"]}
-{"doc_id": "DOC-PAY-00111", "payment_id": "PAY-2025-3112", "timestamp": "2025-01-13T10:00:00+00:00", "currency": "GBP", "amount_minor": 207500, "invoice_refs": ["INV-2025-1056"]}
-{"doc_id": "DOC-PAY-00112", "payment_id": "PAY-2025-3113", "timestamp": "2025-01-15T14:00:00+00:00", "currency": "GBP", "amount_minor": 207500, "invoice_refs": ["INV-2025-1056"]}
-{"doc_id": "DOC-PAY-00114", "payment_id": "PAY-2025-2057", "timestamp": "2025-01-19T17:50:00+00:00", "currency": "EUR", "amount_minor": 119500, "invoice_refs": ["INV-2025-1057"]}
-{"doc_id": "DOC-PAY-00116", "payment_id": "PAY-2025-3116", "timestamp": "2025-01-10T10:00:00+00:00", "currency": "EUR", "amount_minor": 153500, "invoice_refs": ["INV-2025-1058"]}
-{"doc_id": "DOC-PAY-00117", "payment_id": "PAY-2025-3117", "timestamp": "2025-01-12T14:00:00+00:00", "currency": "EUR", "amount_minor": 153500, "invoice_refs": ["INV-2025-1058"]}
-{"doc_id": "DOC-PAY-00120", "payment_id": "PAY-2025-2060", "timestamp": "2025-01-21T14:40:00+00:00", "currency": "USD", "amount_minor": 1093200, "invoice_refs": ["INV-2025-1060"]}
-{"doc_id": "DOC-PAY-00124", "payment_id": "PAY-2025-3126", "timestamp": "2025-01-14T10:00:00+00:00", "currency": "EUR", "amount_minor": 53700, "invoice_refs": ["INV-2025-1063"]}
-{"doc_id": "DOC-PAY-00125", "payment_id": "PAY-2025-3127", "timestamp": "2025-01-16T14:00:00+00:00", "currency": "EUR", "amount_minor": 53700, "invoice_refs": ["INV-2025-1063"]}
-{"doc_id": "DOC-PAY-00127", "payment_id": "PAY-2025-3128", "timestamp": "2025-01-26T10:00:00+00:00", "currency": "USD", "amount_minor": 187350, "invoice_refs": ["INV-2025-1064"]}
-{"doc_id": "DOC-PAY-00128", "payment_id": "PAY-2025-3129", "timestamp": "2025-01-28T14:00:00+00:00", "currency": "USD", "amount_minor": 187350, "invoice_refs": ["INV-2025-1064"]}
+{"doc_id": "DOC-PAY-00002", "payment_id": "PAY-2025-3000", "timestamp": "2025-01-06T10:00:00+00:00", "currency": "GBP", "amount_minor": 292500, "invoice_refs": ["INV-2025-1000"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00003", "payment_id": "PAY-2025-3001", "timestamp": "2025-01-08T14:00:00+00:00", "currency": "GBP", "amount_minor": 292500, "invoice_refs": ["INV-2025-1000"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00006", "payment_id": "PAY-2025-2002", "timestamp": "2025-01-05T15:22:00+00:00", "currency": "USD", "amount_minor": 1194800, "invoice_refs": ["INV-2025-1002"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00008", "payment_id": "PAY-2025-2003", "timestamp": "2025-01-07T10:34:00+00:00", "currency": "EUR", "amount_minor": 417600, "invoice_refs": ["INV-2025-1003"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00010", "payment_id": "PAY-2025-2004", "timestamp": "2025-01-25T11:20:00+00:00", "currency": "EUR", "amount_minor": 107200, "invoice_refs": ["INV-2025-1004"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00012", "payment_id": "PAY-2025-2005", "timestamp": "2025-01-25T10:21:00+00:00", "currency": "EUR", "amount_minor": 294000, "invoice_refs": ["INV-2025-1005"], "direction": "receipt"}
+{"doc_id": "DOC-REFUND-00014", "payment_id": "REFUND-2025-6005", "timestamp": "2025-01-26T11:00:00+00:00", "currency": "EUR", "amount_minor": 294000, "invoice_refs": ["CN-2025-5005"], "direction": "refund"}
+{"doc_id": "DOC-PAY-00016", "payment_id": "PAY-2025-2006", "timestamp": "2025-01-23T14:40:00+00:00", "currency": "GBP", "amount_minor": 688100, "invoice_refs": ["INV-2025-1006"], "direction": "receipt"}
+{"doc_id": "DOC-REFUND-00018", "payment_id": "REFUND-2025-6006", "timestamp": "2025-01-24T11:00:00+00:00", "currency": "GBP", "amount_minor": 172025, "invoice_refs": ["CN-2025-5006"], "direction": "refund"}
+{"doc_id": "DOC-PAY-00020", "payment_id": "PAY-2025-2007", "timestamp": "2025-01-29T10:10:00+00:00", "currency": "EUR", "amount_minor": 520600, "invoice_refs": ["INV-2025-1007"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00022", "payment_id": "PAY-2025-3016", "timestamp": "2025-01-05T10:00:00+00:00", "currency": "USD", "amount_minor": 32400, "invoice_refs": ["INV-2025-1008"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00023", "payment_id": "PAY-2025-3017", "timestamp": "2025-01-07T14:00:00+00:00", "currency": "USD", "amount_minor": 32400, "invoice_refs": ["INV-2025-1008"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00025", "payment_id": "PAY-2025-2009", "timestamp": "2025-01-21T15:45:00+00:00", "currency": "USD", "amount_minor": 538700, "invoice_refs": ["INV-2025-1009"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00027", "payment_id": "PAY-2025-3020", "timestamp": "2025-01-08T10:00:00+00:00", "currency": "USD", "amount_minor": 17400, "invoice_refs": ["INV-2025-1010"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00028", "payment_id": "PAY-2025-3021", "timestamp": "2025-01-10T14:00:00+00:00", "currency": "USD", "amount_minor": 17400, "invoice_refs": ["INV-2025-1010"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00031", "payment_id": "PAY-2025-3024", "timestamp": "2025-01-11T10:00:00+00:00", "currency": "EUR", "amount_minor": 347400, "invoice_refs": ["INV-2025-1012"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00032", "payment_id": "PAY-2025-3025", "timestamp": "2025-01-13T14:00:00+00:00", "currency": "EUR", "amount_minor": 347400, "invoice_refs": ["INV-2025-1012"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00034", "payment_id": "PAY-2025-3026", "timestamp": "2025-01-15T10:00:00+00:00", "currency": "GBP", "amount_minor": 427100, "invoice_refs": ["INV-2025-1013"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00035", "payment_id": "PAY-2025-3027", "timestamp": "2025-01-17T14:00:00+00:00", "currency": "GBP", "amount_minor": 427100, "invoice_refs": ["INV-2025-1013"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00037", "payment_id": "PAY-2025-2014", "timestamp": "2025-01-27T15:23:00+00:00", "currency": "GBP", "amount_minor": 60800, "invoice_refs": ["INV-2025-1014"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00039", "payment_id": "PAY-2025-3030", "timestamp": "2025-01-26T10:00:00+00:00", "currency": "GBP", "amount_minor": 139250, "invoice_refs": ["INV-2025-1015"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00040", "payment_id": "PAY-2025-3031", "timestamp": "2025-01-28T14:00:00+00:00", "currency": "GBP", "amount_minor": 139250, "invoice_refs": ["INV-2025-1015"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00042", "payment_id": "PAY-2025-2016", "timestamp": "2025-01-12T12:30:00+00:00", "currency": "GBP", "amount_minor": 405500, "invoice_refs": ["INV-2025-1016"], "direction": "receipt"}
+{"doc_id": "DOC-REFUND-00044", "payment_id": "REFUND-2025-6016", "timestamp": "2025-01-13T11:00:00+00:00", "currency": "GBP", "amount_minor": 101375, "invoice_refs": ["CN-2025-5016"], "direction": "refund"}
+{"doc_id": "DOC-PAY-00047", "payment_id": "PAY-2025-2018", "timestamp": "2025-01-05T08:21:00+00:00", "currency": "USD", "amount_minor": 1452200, "invoice_refs": ["INV-2025-1018"], "direction": "receipt"}
+{"doc_id": "DOC-REFUND-00049", "payment_id": "REFUND-2025-6018", "timestamp": "2025-01-06T11:00:00+00:00", "currency": "USD", "amount_minor": 1452200, "invoice_refs": ["CN-2025-5018"], "direction": "refund"}
+{"doc_id": "DOC-PAY-00052", "payment_id": "PAY-2025-2020", "timestamp": "2025-01-28T16:11:00+00:00", "currency": "GBP", "amount_minor": 399500, "invoice_refs": ["INV-2025-1020"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00054", "payment_id": "PAY-2025-3042", "timestamp": "2025-01-06T10:00:00+00:00", "currency": "EUR", "amount_minor": 171700, "invoice_refs": ["INV-2025-1021"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00055", "payment_id": "PAY-2025-3043", "timestamp": "2025-01-08T14:00:00+00:00", "currency": "EUR", "amount_minor": 171700, "invoice_refs": ["INV-2025-1021"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00058", "payment_id": "PAY-2025-2023", "timestamp": "2025-01-24T08:21:00+00:00", "currency": "GBP", "amount_minor": 177200, "invoice_refs": ["INV-2025-1023"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00060", "payment_id": "PAY-2025-2024", "timestamp": "2025-01-09T16:10:00+00:00", "currency": "GBP", "amount_minor": 531900, "invoice_refs": ["INV-2025-1024"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00062", "payment_id": "PAY-2025-3050", "timestamp": "2025-01-18T10:00:00+00:00", "currency": "USD", "amount_minor": 86150, "invoice_refs": ["INV-2025-1025"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00063", "payment_id": "PAY-2025-3051", "timestamp": "2025-01-20T14:00:00+00:00", "currency": "USD", "amount_minor": 86150, "invoice_refs": ["INV-2025-1025"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00065", "payment_id": "PAY-2025-3052", "timestamp": "2025-01-20T10:00:00+00:00", "currency": "GBP", "amount_minor": 161900, "invoice_refs": ["INV-2025-1026"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00066", "payment_id": "PAY-2025-3053", "timestamp": "2025-01-22T14:00:00+00:00", "currency": "GBP", "amount_minor": 161900, "invoice_refs": ["INV-2025-1026"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00069", "payment_id": "PAY-2025-3056", "timestamp": "2025-01-16T10:00:00+00:00", "currency": "EUR", "amount_minor": 362150, "invoice_refs": ["INV-2025-1028"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00070", "payment_id": "PAY-2025-3057", "timestamp": "2025-01-18T14:00:00+00:00", "currency": "EUR", "amount_minor": 362150, "invoice_refs": ["INV-2025-1028"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00073", "payment_id": "PAY-2025-2030", "timestamp": "2025-01-28T11:10:00+00:00", "currency": "EUR", "amount_minor": 897600, "invoice_refs": ["INV-2025-1030"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00076", "payment_id": "PAY-2025-3064", "timestamp": "2025-01-29T10:00:00+00:00", "currency": "USD", "amount_minor": 387950, "invoice_refs": ["INV-2025-1032"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00077", "payment_id": "PAY-2025-3065", "timestamp": "2025-01-30T14:00:00+00:00", "currency": "USD", "amount_minor": 387950, "invoice_refs": ["INV-2025-1032"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00079", "payment_id": "PAY-2025-2033", "timestamp": "2025-01-29T16:31:00+00:00", "currency": "GBP", "amount_minor": 181500, "invoice_refs": ["INV-2025-1033"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00081", "payment_id": "PAY-2025-3068", "timestamp": "2025-01-06T10:00:00+00:00", "currency": "USD", "amount_minor": 457250, "invoice_refs": ["INV-2025-1034"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00082", "payment_id": "PAY-2025-3069", "timestamp": "2025-01-08T14:00:00+00:00", "currency": "USD", "amount_minor": 457250, "invoice_refs": ["INV-2025-1034"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00084", "payment_id": "PAY-2025-2035", "timestamp": "2025-01-10T11:31:00+00:00", "currency": "GBP", "amount_minor": 1020100, "invoice_refs": ["INV-2025-1035"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00087", "payment_id": "PAY-2025-2037", "timestamp": "2025-01-13T15:25:00+00:00", "currency": "USD", "amount_minor": 593600, "invoice_refs": ["INV-2025-1037"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00089", "payment_id": "PAY-2025-2038", "timestamp": "2025-01-18T16:11:00+00:00", "currency": "EUR", "amount_minor": 852000, "invoice_refs": ["INV-2025-1038"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00091", "payment_id": "PAY-2025-3078", "timestamp": "2025-01-21T10:00:00+00:00", "currency": "EUR", "amount_minor": 602050, "invoice_refs": ["INV-2025-1039"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00092", "payment_id": "PAY-2025-3079", "timestamp": "2025-01-23T14:00:00+00:00", "currency": "EUR", "amount_minor": 602050, "invoice_refs": ["INV-2025-1039"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00094", "payment_id": "PAY-2025-2040", "timestamp": "2025-01-17T15:17:00+00:00", "currency": "GBP", "amount_minor": 238500, "invoice_refs": ["INV-2025-1040"], "direction": "receipt"}
+{"doc_id": "DOC-PAY-00096", "payment_id": "PAY-2025-2041", "timestamp": "2025-01-19T14:14:00+00:00", "currency": "EUR", "amount_minor": 478400, "invoice_refs": ["INV-2025-1041"], "direction": "receipt"}

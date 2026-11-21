@@ -5,17 +5,83 @@
       "issue_id": "ISSUE-0001",
       "type": "partial_payment",
       "affected_ids": [
-        "PAY-2025-3035",
-        "ROW-00075",
-        "ROW-00076"
+        "PAY-2025-3029",
+        "ROW-00077",
+        "ROW-00078"
       ],
-      "expected_amount_minor": 245200,
+      "expected_amount_minor": 161225,
       "currency": "EUR",
       "acceptable_evidence_sets": [
         [
-          "DOC-PAY-00038",
-          "ROW-00075",
-          "ROW-00076"
+          "DOC-INV-00037",
+          "DOC-PAY-00039",
+          "ROW-00077",
+          "ROW-00078"
+        ]
+      ]
+    },
+    {
+      "issue_id": "ISSUE-0002",
+      "type": "wrong_fx_or_date",
+      "affected_ids": [
+        "PAY-2025-3029",
+        "INV-2025-1014",
+        "ROW-00077",
+        "ROW-00078",
+        "ROW-00235",
+        "ROW-00236"
+      ],
+      "expected_amount_minor": 25828,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00037",
+          "DOC-PAY-00039",
+          "ROW-00077",
+          "ROW-00078",
+          "ROW-00235",
+          "ROW-00236",
+          "2025-01-31:EUR:USD"
+        ]
+      ]
+    },
+    {
+      "issue_id": "ISSUE-0003",
+      "type": "duplicate_accounts",
+      "affected_ids": [
+        "INV-2025-1016",
+        "ROW-00085",
+        "ROW-00086",
+        "ROW-00237",
+        "ROW-00238"
+      ],
+      "expected_amount_minor": 1061500,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00043",
+          "ROW-00085",
+          "ROW-00086",
+          "ROW-00237",
+          "ROW-00238"
+        ]
+      ]
+    },
+    {
+      "issue_id": "ISSUE-0004",
+      "type": "period_misclassification",
+      "affected_ids": [
+        "INV-2025-1016",
+        "ROW-00237",
+        "ROW-00238"
+      ],
+      "expected_amount_minor": 1061500,
+      "currency": "USD",
+      "acceptable_evidence_sets": [
+        [
+          "DOC-INV-00043",
+          "ROW-00237",
+          "ROW-00238"
         ]
       ]
     }
