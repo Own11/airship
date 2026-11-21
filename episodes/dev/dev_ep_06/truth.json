@@ -9,7 +9,7 @@
         "ROW-00001",
         "ROW-00002"
       ],
-      "expected_amount_minor": 97199,
+      "expected_amount_minor": 81965,
       "currency": "USD",
       "acceptable_evidence_sets": [
         [

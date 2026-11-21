@@ -7,29 +7,31 @@
       "issue_id": "ISSUE-0001",
       "type": "partial_payment",
       "affected_ids": [
-        "PAY-2025-2040",
-        "ROW-00155",
-        "ROW-00156"
+        "PAY-2025-3105",
+        "ROW-00239",
+        "ROW-00240"
       ],
-      "expected_amount_minor": 121200,
-      "currency": "EUR",
+      "expected_amount_minor": 42250,
+      "currency": "GBP",
       "acceptable_evidence_sets": [
         [
-          "DOC-PAY-00078",
-          "ROW-00155",
-          "ROW-00156"
+          "DOC-PAY-00120",
+          "ROW-00239",
+          "ROW-00240"
         ]
       ],
-      "description": "Interacting scenario X1: unallocated foreign currency payment PAY-2025-2040 near period boundary.",
+      "description": "Interacting scenario X1: unallocated foreign currency payment PAY-2025-3105 (GBP) on period boundary (2025-01-31T22:45:00+00:00).",
       "before_state": {
-        "full_amount": 242400
+        "full_amount": 84500,
+        "currency": "GBP"
       },
       "after_state": {
-        "allocated": 121200
+        "allocated": 42250,
+        "boundary_ts": "2025-01-31T22:45:00+00:00"
       }
     },
     {
-      "issue_id": "ISSUE-0002",
+      "issue_id": "ISSUE-0003",
       "type": "duplicate_accounts",
       "affected_ids": [
         "ROW-00001",
@@ -54,43 +56,20 @@
           "DOC-INV-00001"
         ]
       ],
-      "description": "Cloned ledger rows for invoice INV-2025-1000 creating duplicate accounting entry.",
+      "description": "Interacting scenario X2: Cloned out-of-period invoice INV-2025-1000.",
       "before_state": {
         "rows": [
           "ROW-00001",
           "ROW-00002"
-        ]
+        ],
+        "doc_date": "2025-01-21T15:50:00+00:00"
       },
       "after_state": {
         "added_rows": [
           "ROW-DUP-99203",
           "ROW-DUP-63130"
-        ]
-      }
-    },
-    {
-      "issue_id": "ISSUE-0003",
-      "type": "period_misclassification",
-      "affected_ids": [
-        "INV-2025-1009",
-        "ROW-00029",
-        "ROW-00030"
-      ],
-      "expected_amount_minor": 665500,
-      "currency": "EUR",
-      "acceptable_evidence_sets": [
-        [
-          "DOC-INV-00015",
-          "ROW-00029",
-          "ROW-00030"
-        ]
-      ],
-      "description": "Invoice INV-2025-1009 belongs to February (2025-02-05T11:00:00+00:00) but was recognized in January ledger.",
-      "before_state": {
-        "doc_date": "2025-01-24T17:39:00+00:00"
-      },
-      "after_state": {
-        "doc_date": "2025-02-05T11:00:00+00:00"
+        ],
+        "doc_date": "2025-02-04T10:00:00+00:00"
       }
     }
   ]

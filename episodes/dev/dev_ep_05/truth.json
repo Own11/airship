@@ -5,17 +5,17 @@
       "issue_id": "ISSUE-0001",
       "type": "partial_payment",
       "affected_ids": [
-        "PAY-2025-2060",
-        "ROW-00233",
-        "ROW-00234"
+        "PAY-REF-2025-2044",
+        "ROW-00201",
+        "ROW-00202"
       ],
-      "expected_amount_minor": 265266,
-      "currency": "EUR",
+      "expected_amount_minor": 32083,
+      "currency": "GBP",
       "acceptable_evidence_sets": [
         [
-          "DOC-PAY-00117",
-          "ROW-00233",
-          "ROW-00234"
+          "DOC-PAY-00101",
+          "ROW-00201",
+          "ROW-00202"
         ]
       ]
     }

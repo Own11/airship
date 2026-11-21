@@ -55,9 +55,9 @@ class FinancialAuditEnv:
                     "debit_minor": int(r["debit_minor"]),
                     "credit_minor": int(r["credit_minor"]),
                     "currency": r["currency"],
-                    "entity_id": r["entity_id"] or None,
-                    "invoice_id": r["invoice_id"] or None,
-                    "payment_id": r["payment_id"] or None
+                    "entity_id": None if r["entity_id"] in ("", "null", "None") else r["entity_id"],
+                    "invoice_id": None if r["invoice_id"] in ("", "null", "None") else r["invoice_id"],
+                    "payment_id": None if r["payment_id"] in ("", "null", "None") else r["payment_id"]
                 })
 
         fx_rows = []
@@ -95,6 +95,48 @@ class FinancialAuditEnv:
         else:
             self.truth_file = None
 
+    def _load_synthetic_episode(self, seed: int):
+        """Dynamically generates an episode in-memory if no pre-generated episode directory was provided."""
+        from fintech_rl.generator.company import SyntheticCompany
+        from fintech_rl.generator.errors import ErrorInjector
+        ep_id = f"sim_ep_{seed}"
+        company = SyntheticCompany(seed=seed, episode_id=ep_id)
+        company.generate()
+        injector = ErrorInjector(company=company, seed=seed)
+        injector.apply_errors(["E1", "E2"])
+
+        self.manifest_data = company.manifest.model_dump()
+        self.policy_data = company.policy.model_dump()
+
+        ledger_rows = []
+        for r in company.ledger:
+            ledger_rows.append({
+                "row_id": r.row_id,
+                "timestamp": r.timestamp,
+                "account": r.account,
+                "debit_minor": r.debit_minor,
+                "credit_minor": r.credit_minor,
+                "currency": r.currency,
+                "entity_id": r.entity_id,
+                "invoice_id": r.invoice_id,
+                "payment_id": r.payment_id
+            })
+
+        fx_rows = [
+            {"date": fx.date, "source_currency": fx.source_currency, "target_currency": fx.target_currency, "rate": str(fx.rate)}
+            for fx in company.fx_rates
+        ]
+        invoices = {inv.doc_id: inv.model_dump() for inv in company.invoices}
+        payments = {p.doc_id: p.model_dump() for p in company.payments}
+
+        self.action_handler = ActionHandler(
+            ledger=ledger_rows,
+            invoices=invoices,
+            payments=payments,
+            fx_rates=fx_rows
+        )
+        self.truth_file = TruthFile(episode_id=ep_id, issues=injector.issues)
+
     def reset(self, seed: Optional[int] = None, config: Optional[Dict[str, Any]] = None) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         self.current_step = 0
         self.is_terminated = False
@@ -109,10 +151,16 @@ class FinancialAuditEnv:
                 self.load_from_dir(Path(config["episode_dir"]))
             elif self.episode_dir:
                 self.load_from_dir(self.episode_dir)
+            elif seed is not None:
+                self._load_synthetic_episode(seed)
+            else:
+                self._load_synthetic_episode(seed=42)
         elif self.episode_dir:
             self.load_from_dir(self.episode_dir)
+        elif seed is not None:
+            self._load_synthetic_episode(seed)
         else:
-            raise ValueError("Episode directory must be provided either in config or at init")
+            self._load_synthetic_episode(seed=42)
 
         obs = create_initial_observation(
             manifest_data=self.manifest_data,

@@ -7,49 +7,49 @@
       "issue_id": "ISSUE-0001",
       "type": "wrong_fx_or_date",
       "affected_ids": [
-        "INV-2025-1015",
-        "ROW-00063",
-        "ROW-00064"
+        "INV-2025-1012",
+        "ROW-00059",
+        "ROW-00060"
       ],
-      "expected_amount_minor": 180632,
+      "expected_amount_minor": 58382,
       "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00032",
-          "ROW-00063",
-          "ROW-00064"
+          "DOC-INV-00030",
+          "ROW-00059",
+          "ROW-00060"
         ]
       ],
-      "description": "Applied wrong FX rate 1.4728 instead of 1.2807 for INV-2025-1015.",
+      "description": "Applied wrong FX rate 1.2321 instead of 1.0714 for INV-2025-1012.",
       "before_state": {
-        "official_rate": "1.2807",
-        "expected_base": 1204242
+        "official_rate": "1.0714",
+        "expected_base": 389240
       },
       "after_state": {
-        "bad_rate": "1.4728",
-        "bad_base": 1384874
+        "bad_rate": "1.2321",
+        "bad_base": 447622
       }
     },
     {
       "issue_id": "ISSUE-0002",
       "type": "period_misclassification",
       "affected_ids": [
-        "INV-2025-1005",
-        "ROW-00023",
-        "ROW-00024"
+        "INV-2025-1008",
+        "ROW-00041",
+        "ROW-00042"
       ],
-      "expected_amount_minor": 801200,
-      "currency": "GBP",
+      "expected_amount_minor": 541100,
+      "currency": "EUR",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00012",
-          "ROW-00023",
-          "ROW-00024"
+          "DOC-INV-00021",
+          "ROW-00041",
+          "ROW-00042"
         ]
       ],
-      "description": "Invoice INV-2025-1005 belongs to February (2025-02-05T11:00:00+00:00) but was recognized in January ledger.",
+      "description": "Invoice INV-2025-1008 belongs to February (2025-02-05T11:00:00+00:00) but was recognized in January ledger.",
       "before_state": {
-        "doc_date": "2025-01-24T10:45:00+00:00"
+        "doc_date": "2025-01-22T09:20:00+00:00"
       },
       "after_state": {
         "doc_date": "2025-02-05T11:00:00+00:00"

@@ -82,7 +82,7 @@ class SyntheticCompany:
             fx_map[(dt, "USD", "USD")] = Decimal("1.0")
 
         # 2. Generate transactions: 40 to 80 business cycles (each creates invoices, payments, balanced ledger entries)
-        num_cycles = self.rng.randint(40, 75)
+        num_cycles = self.rng.randint(55, 80)
         
         for i in range(num_cycles):
             entity = self.rng.choice(ENTITIES)
@@ -154,7 +154,7 @@ class SyntheticCompany:
             ))
 
             # Realistic distractions: some paid in full, some split in 2 payments, some delayed
-            cycle_type = self.rng.choice(["full", "split", "unpaid"])
+            cycle_type = self.rng.choice(["full", "split", "unpaid", "refund"])
             if cycle_type == "full":
                 pay_day = min(30, day + self.rng.randint(1, 3))
                 pay_ts = f"2025-01-{pay_day:02d}T{time_h:02d}:{time_m:02d}:00+00:00"
@@ -244,8 +244,53 @@ class SyntheticCompany:
                     debit_minor=0, credit_minor=half2, currency=curr, entity_id=entity, invoice_id=inv_id, payment_id=pid2
                 ))
 
+            elif cycle_type == "refund":
+                # Legitimate return / refund distracting case: invoice paid in full, then partial return issued
+                pay_day = min(25, day + self.rng.randint(1, 2))
+                pay_ts = f"2025-01-{pay_day:02d}T{time_h:02d}:{time_m:02d}:00+00:00"
+                pay_id = f"PAY-2025-{2000 + i}"
+                self.payments.append(PaymentDoc(
+                    doc_id=self._next_doc_id("DOC-PAY"),
+                    payment_id=pay_id,
+                    timestamp=pay_ts,
+                    currency=curr,
+                    amount_minor=inv_total,
+                    invoice_refs=[inv_id]
+                ))
+                self.ledger.append(LedgerRow(
+                    row_id=self._next_row_id(), timestamp=pay_ts, account=ACCOUNTS["CASH"],
+                    debit_minor=inv_total, credit_minor=0, currency=curr, entity_id=entity, invoice_id=inv_id, payment_id=pay_id
+                ))
+                self.ledger.append(LedgerRow(
+                    row_id=self._next_row_id(), timestamp=pay_ts, account=ACCOUNTS["AR"],
+                    debit_minor=0, credit_minor=inv_total, currency=curr, entity_id=entity, invoice_id=inv_id, payment_id=pay_id
+                ))
+
+                # Legitimate refund issued 2-4 days later (e.g. goods return / credit note)
+                refund_amt = inv_total // 4
+                if refund_amt > 0:
+                    ref_day = min(28, pay_day + 2)
+                    ref_ts = f"2025-01-{ref_day:02d}T15:00:00+00:00"
+                    ref_id = f"PAY-REF-2025-{2000 + i}"
+                    self.payments.append(PaymentDoc(
+                        doc_id=self._next_doc_id("DOC-PAY"),
+                        payment_id=ref_id,
+                        timestamp=ref_ts,
+                        currency=curr,
+                        amount_minor=refund_amt,
+                        invoice_refs=[inv_id]
+                    ))
+                    self.ledger.append(LedgerRow(
+                        row_id=self._next_row_id(), timestamp=ref_ts, account=ACCOUNTS["REVENUE"],
+                        debit_minor=refund_amt, credit_minor=0, currency=curr, entity_id=entity, invoice_id=inv_id, payment_id=ref_id
+                    ))
+                    self.ledger.append(LedgerRow(
+                        row_id=self._next_row_id(), timestamp=ref_ts, account=ACCOUNTS["CASH"],
+                        debit_minor=0, credit_minor=refund_amt, currency=curr, entity_id=entity, invoice_id=inv_id, payment_id=ref_id
+                    ))
+
         # Add some regular expenses (e.g. utilities, rent)
-        for exp_i in range(10):
+        for exp_i in range(16):
             exp_day = (exp_i * 3) % 27 + 1
             exp_ts = f"2025-01-{exp_day:02d}T09:30:00+00:00"
             amt = (self.rng.randint(200, 1500)) * 100

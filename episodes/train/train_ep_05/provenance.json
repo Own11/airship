@@ -7,27 +7,27 @@
       "issue_id": "ISSUE-0001",
       "type": "wrong_fx_or_date",
       "affected_ids": [
-        "INV-2025-1029",
-        "ROW-00121",
-        "ROW-00122"
+        "INV-2025-1057",
+        "ROW-00239",
+        "ROW-00240"
       ],
-      "expected_amount_minor": 38396,
+      "expected_amount_minor": 118989,
       "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00061",
-          "ROW-00121",
-          "ROW-00122"
+          "DOC-INV-00120",
+          "ROW-00239",
+          "ROW-00240"
         ]
       ],
-      "description": "Applied wrong FX rate 1.502 instead of 1.3061 for INV-2025-1029.",
+      "description": "Applied wrong FX rate 1.2622 instead of 1.0976 for INV-2025-1057.",
       "before_state": {
-        "official_rate": "1.3061",
-        "expected_base": 255996
+        "official_rate": "1.0976",
+        "expected_base": 793455
       },
       "after_state": {
-        "bad_rate": "1.502",
-        "bad_base": 294392
+        "bad_rate": "1.2622",
+        "bad_base": 912444
       }
     }
   ]

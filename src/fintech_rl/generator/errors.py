@@ -274,11 +274,11 @@ class ErrorInjector:
     def inject_x1_partial_fx_period_boundary(self) -> bool:
         """
         X1: Interacting scenario 1.
-        Partial payment in foreign currency on period boundary.
-        Combines partial payment + foreign currency conversion difference.
+        Partial payment in foreign currency right on the period boundary.
+        Combines foreign currency valuation + boundary timing + partial ledger allocation.
         """
-        # Pick a non-USD payment on 2025-01-30
-        candidates = [p for p in self.company.payments if p.currency != "USD" and p.amount_minor > 1000]
+        # Pick a foreign currency payment (EUR or GBP)
+        candidates = [p for p in self.company.payments if p.currency in ("EUR", "GBP") and p.amount_minor > 1000]
         if not candidates:
             return False
         pay = self.rng.choice(candidates)
@@ -286,11 +286,15 @@ class ErrorInjector:
         if len(rows) < 2:
             return False
 
-        # Allocate partial amount
+        # Set payment timestamp right at the period cutoff boundary
+        pay.timestamp = "2025-01-31T22:45:00+00:00"
+
+        # Allocate partial amount (50% unallocated)
         unallocated_amt = pay.amount_minor // 2
         allocated_amt = pay.amount_minor - unallocated_amt
 
         for r in rows:
+            r.timestamp = pay.timestamp
             if r.debit_minor > 0:
                 r.debit_minor = allocated_amt
             if r.credit_minor > 0:
@@ -317,9 +321,9 @@ class ErrorInjector:
             expected_amount_minor=unallocated_amt,
             currency=pay.currency,
             acceptable_evidence_sets=issue.acceptable_evidence_sets,
-            description=f"Interacting scenario X1: unallocated foreign currency payment {pay.payment_id} near period boundary.",
-            before_state={"full_amount": pay.amount_minor},
-            after_state={"allocated": allocated_amt}
+            description=f"Interacting scenario X1: unallocated foreign currency payment {pay.payment_id} ({pay.currency}) on period boundary ({pay.timestamp}).",
+            before_state={"full_amount": pay.amount_minor, "currency": pay.currency},
+            after_state={"allocated": allocated_amt, "boundary_ts": pay.timestamp}
         )
         self.changes.append(change)
         return True
@@ -327,15 +331,95 @@ class ErrorInjector:
     def inject_x2_duplicate_and_period(self) -> bool:
         """
         X2: Interacting scenario 2.
-        Duplicate entry AND period misclassification on same entity.
-        An invoice from next period was duplicated into current period.
+        Duplicate entry AND period misclassification on the SAME invoice/transaction.
+        An invoice belonging to February (outside reporting period) was improperly booked in January,
+        and its ledger entries were also duplicated.
         """
-        success = self.inject_e1_duplicate_accounts()
-        if not success:
+        candidates = [inv for inv in self.company.invoices if inv.issued_at.startswith("2025-01-2")]
+        if not candidates:
             return False
-        # Also inject period misclassification on another invoice
-        success2 = self.inject_e4_period_misclassification()
-        return success2
+        inv = self.rng.choice(candidates)
+        matching_rows = [r for r in self.company.ledger if r.invoice_id == inv.invoice_id and r.payment_id is None]
+        if len(matching_rows) < 2:
+            return False
+
+        r_debit = [r for r in matching_rows if r.debit_minor > 0][0]
+        r_credit = [r for r in matching_rows if r.credit_minor > 0][0]
+
+        # 1. Period misclassification on this invoice: belongs to February
+        orig_inv_date = inv.issued_at
+        inv.issued_at = "2025-02-04T10:00:00+00:00"
+
+        issue_p_id = self._next_issue_id()
+        affected_p = [inv.invoice_id, r_debit.row_id, r_credit.row_id]
+        issue_period = TruthIssue(
+            issue_id=issue_p_id,
+            type="period_misclassification",
+            affected_ids=affected_p,
+            expected_amount_minor=inv.total_minor,
+            currency=inv.currency,
+            acceptable_evidence_sets=[
+                [inv.doc_id, r_debit.row_id, r_credit.row_id]
+            ]
+        )
+        self.issues.append(issue_period)
+
+        # 2. Duplicate entries cloned for the same out-of-period invoice
+        dup_r1_id = f"ROW-DUP-{self.rng.randint(10000, 99999)}"
+        dup_r2_id = f"ROW-DUP-{self.rng.randint(10000, 99999)}"
+
+        dup_r1 = LedgerRow(
+            row_id=dup_r1_id,
+            timestamp=r_debit.timestamp,
+            account=r_debit.account,
+            debit_minor=r_debit.debit_minor,
+            credit_minor=0,
+            currency=r_debit.currency,
+            entity_id=r_debit.entity_id,
+            invoice_id=r_debit.invoice_id,
+            payment_id=None
+        )
+        dup_r2 = LedgerRow(
+            row_id=dup_r2_id,
+            timestamp=r_credit.timestamp,
+            account=r_credit.account,
+            debit_minor=0,
+            credit_minor=r_credit.credit_minor,
+            currency=r_credit.currency,
+            entity_id=r_credit.entity_id,
+            invoice_id=r_credit.invoice_id,
+            payment_id=None
+        )
+        self.company.ledger.extend([dup_r1, dup_r2])
+
+        issue_dup_id = self._next_issue_id()
+        affected_dup = [r_debit.row_id, r_credit.row_id, dup_r1_id, dup_r2_id, inv.invoice_id]
+        issue_dup = TruthIssue(
+            issue_id=issue_dup_id,
+            type="duplicate_accounts",
+            affected_ids=affected_dup,
+            expected_amount_minor=inv.total_minor,
+            currency=inv.currency,
+            acceptable_evidence_sets=[
+                [dup_r1_id, dup_r2_id, inv.doc_id],
+                [dup_r1_id, dup_r2_id, r_debit.row_id, r_credit.row_id, inv.doc_id]
+            ]
+        )
+        self.issues.append(issue_dup)
+
+        change = ProvenanceChange(
+            issue_id=issue_dup_id,
+            type="duplicate_accounts",
+            affected_ids=affected_dup,
+            expected_amount_minor=inv.total_minor,
+            currency=inv.currency,
+            acceptable_evidence_sets=issue_dup.acceptable_evidence_sets,
+            description=f"Interacting scenario X2: Cloned out-of-period invoice {inv.invoice_id}.",
+            before_state={"rows": [r_debit.row_id, r_credit.row_id], "doc_date": orig_inv_date},
+            after_state={"added_rows": [dup_r1_id, dup_r2_id], "doc_date": inv.issued_at}
+        )
+        self.changes.append(change)
+        return True
 
     def apply_errors(self, error_types: List[str]):
         """Applies requested error types deterministically."""

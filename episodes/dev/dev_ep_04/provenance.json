@@ -7,33 +7,33 @@
       "issue_id": "ISSUE-0001",
       "type": "duplicate_accounts",
       "affected_ids": [
-        "ROW-00103",
-        "ROW-00104",
+        "ROW-00231",
+        "ROW-00232",
         "ROW-DUP-21201",
         "ROW-DUP-86533",
-        "INV-2025-1025"
+        "INV-2025-1050"
       ],
-      "expected_amount_minor": 590100,
-      "currency": "GBP",
+      "expected_amount_minor": 767100,
+      "currency": "EUR",
       "acceptable_evidence_sets": [
         [
           "ROW-DUP-21201",
           "ROW-DUP-86533",
-          "DOC-INV-00052"
+          "DOC-INV-00116"
         ],
         [
           "ROW-DUP-21201",
           "ROW-DUP-86533",
-          "ROW-00103",
-          "ROW-00104",
-          "DOC-INV-00052"
+          "ROW-00231",
+          "ROW-00232",
+          "DOC-INV-00116"
         ]
       ],
-      "description": "Cloned ledger rows for invoice INV-2025-1025 creating duplicate accounting entry.",
+      "description": "Cloned ledger rows for invoice INV-2025-1050 creating duplicate accounting entry.",
       "before_state": {
         "rows": [
-          "ROW-00103",
-          "ROW-00104"
+          "ROW-00231",
+          "ROW-00232"
         ]
       },
       "after_state": {

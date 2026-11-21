@@ -3,46 +3,46 @@
   "issues": [
     {
       "issue_id": "ISSUE-0001",
-      "type": "duplicate_accounts",
+      "type": "period_misclassification",
       "affected_ids": [
-        "ROW-00149",
-        "ROW-00150",
-        "ROW-DUP-96140",
-        "ROW-DUP-13061",
-        "INV-2025-1035"
+        "INV-2025-1049",
+        "ROW-00221",
+        "ROW-00222"
       ],
-      "expected_amount_minor": 114000,
-      "currency": "GBP",
+      "expected_amount_minor": 533400,
+      "currency": "EUR",
       "acceptable_evidence_sets": [
         [
-          "ROW-DUP-96140",
-          "ROW-DUP-13061",
-          "DOC-INV-00075"
-        ],
-        [
-          "ROW-DUP-96140",
-          "ROW-DUP-13061",
-          "ROW-00149",
-          "ROW-00150",
-          "DOC-INV-00075"
+          "DOC-INV-00111",
+          "ROW-00221",
+          "ROW-00222"
         ]
       ]
     },
     {
       "issue_id": "ISSUE-0002",
-      "type": "period_misclassification",
+      "type": "duplicate_accounts",
       "affected_ids": [
-        "INV-2025-1020",
-        "ROW-00087",
-        "ROW-00088"
+        "ROW-00221",
+        "ROW-00222",
+        "ROW-DUP-96140",
+        "ROW-DUP-13061",
+        "INV-2025-1049"
       ],
-      "expected_amount_minor": 86100,
-      "currency": "USD",
+      "expected_amount_minor": 533400,
+      "currency": "EUR",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00044",
-          "ROW-00087",
-          "ROW-00088"
+          "ROW-DUP-96140",
+          "ROW-DUP-13061",
+          "DOC-INV-00111"
+        ],
+        [
+          "ROW-DUP-96140",
+          "ROW-DUP-13061",
+          "ROW-00221",
+          "ROW-00222",
+          "DOC-INV-00111"
         ]
       ]
     }

@@ -7,25 +7,27 @@
       "issue_id": "ISSUE-0001",
       "type": "partial_payment",
       "affected_ids": [
-        "PAY-2025-3035",
-        "ROW-00075",
-        "ROW-00076"
+        "PAY-REF-2025-2019",
+        "ROW-00079",
+        "ROW-00080"
       ],
-      "expected_amount_minor": 245200,
-      "currency": "EUR",
+      "expected_amount_minor": 19375,
+      "currency": "GBP",
       "acceptable_evidence_sets": [
         [
-          "DOC-PAY-00038",
-          "ROW-00075",
-          "ROW-00076"
+          "DOC-PAY-00040",
+          "ROW-00079",
+          "ROW-00080"
         ]
       ],
-      "description": "Interacting scenario X1: unallocated foreign currency payment PAY-2025-3035 near period boundary.",
+      "description": "Interacting scenario X1: unallocated foreign currency payment PAY-REF-2025-2019 (GBP) on period boundary (2025-01-31T22:45:00+00:00).",
       "before_state": {
-        "full_amount": 490400
+        "full_amount": 38750,
+        "currency": "GBP"
       },
       "after_state": {
-        "allocated": 245200
+        "allocated": 19375,
+        "boundary_ts": "2025-01-31T22:45:00+00:00"
       }
     }
   ]

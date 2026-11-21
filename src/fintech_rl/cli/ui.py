@@ -10,6 +10,18 @@ import sys
 import shutil
 from typing import List, Dict, Any, Optional, Tuple, Sequence
 
+# Ensure UTF-8 stdout encoding on Windows/CP1251 terminals
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+if hasattr(sys.stderr, "reconfigure"):
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 # Detect color capability
 def _supports_color() -> bool:
     if os.environ.get("NO_COLOR") is not None:

@@ -11,7 +11,7 @@
         "ROW-00001",
         "ROW-00002"
       ],
-      "expected_amount_minor": 97199,
+      "expected_amount_minor": 81965,
       "currency": "USD",
       "acceptable_evidence_sets": [
         [
@@ -20,14 +20,14 @@
           "ROW-00002"
         ]
       ],
-      "description": "Applied wrong FX rate 1.5165 instead of 1.3187 for INV-2025-1000.",
+      "description": "Applied wrong FX rate 1.2788 instead of 1.112 for INV-2025-1000.",
       "before_state": {
-        "official_rate": "1.3187",
-        "expected_base": 648009
+        "official_rate": "1.112",
+        "expected_base": 546437
       },
       "after_state": {
-        "bad_rate": "1.5165",
-        "bad_base": 745208
+        "bad_rate": "1.2788",
+        "bad_base": 628402
       }
     }
   ]

@@ -5,17 +5,17 @@
       "issue_id": "ISSUE-0001",
       "type": "wrong_fx_or_date",
       "affected_ids": [
-        "INV-2025-1015",
-        "ROW-00063",
-        "ROW-00064"
+        "INV-2025-1012",
+        "ROW-00059",
+        "ROW-00060"
       ],
-      "expected_amount_minor": 180632,
+      "expected_amount_minor": 58382,
       "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00032",
-          "ROW-00063",
-          "ROW-00064"
+          "DOC-INV-00030",
+          "ROW-00059",
+          "ROW-00060"
         ]
       ]
     },
@@ -23,17 +23,17 @@
       "issue_id": "ISSUE-0002",
       "type": "period_misclassification",
       "affected_ids": [
-        "INV-2025-1005",
-        "ROW-00023",
-        "ROW-00024"
+        "INV-2025-1008",
+        "ROW-00041",
+        "ROW-00042"
       ],
-      "expected_amount_minor": 801200,
-      "currency": "GBP",
+      "expected_amount_minor": 541100,
+      "currency": "EUR",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00012",
-          "ROW-00023",
-          "ROW-00024"
+          "DOC-INV-00021",
+          "ROW-00041",
+          "ROW-00042"
         ]
       ]
     }

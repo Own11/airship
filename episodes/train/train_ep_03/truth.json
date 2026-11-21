@@ -5,26 +5,26 @@
       "issue_id": "ISSUE-0001",
       "type": "duplicate_accounts",
       "affected_ids": [
-        "ROW-00245",
-        "ROW-00246",
+        "ROW-00261",
+        "ROW-00262",
         "ROW-DUP-38167",
         "ROW-DUP-20228",
         "INV-2025-1058"
       ],
-      "expected_amount_minor": 144000,
-      "currency": "EUR",
+      "expected_amount_minor": 1514500,
+      "currency": "GBP",
       "acceptable_evidence_sets": [
         [
           "ROW-DUP-38167",
           "ROW-DUP-20228",
-          "DOC-INV-00123"
+          "DOC-INV-00131"
         ],
         [
           "ROW-DUP-38167",
           "ROW-DUP-20228",
-          "ROW-00245",
-          "ROW-00246",
-          "DOC-INV-00123"
+          "ROW-00261",
+          "ROW-00262",
+          "DOC-INV-00131"
         ]
       ]
     }

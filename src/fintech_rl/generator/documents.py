@@ -45,7 +45,7 @@ def render_episode_files(
         for r in company.ledger:
             writer.writerow([
                 r.row_id, r.timestamp, r.account, r.debit_minor, r.credit_minor,
-                r.currency, r.entity_id or "", r.invoice_id or "", r.payment_id or ""
+                r.currency, r.entity_id or "null", r.invoice_id or "null", r.payment_id or "null"
             ])
 
     # 5. invoices.jsonl

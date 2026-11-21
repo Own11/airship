@@ -7,25 +7,25 @@
       "issue_id": "ISSUE-0001",
       "type": "partial_payment",
       "affected_ids": [
-        "PAY-2025-3002",
-        "ROW-00007",
-        "ROW-00008"
+        "PAY-2025-3005",
+        "ROW-00011",
+        "ROW-00012"
       ],
-      "expected_amount_minor": 192666,
-      "currency": "EUR",
+      "expected_amount_minor": 7950,
+      "currency": "GBP",
       "acceptable_evidence_sets": [
         [
-          "DOC-PAY-00004",
-          "ROW-00007",
-          "ROW-00008"
+          "DOC-PAY-00006",
+          "ROW-00011",
+          "ROW-00012"
         ]
       ],
-      "description": "Underallocated payment PAY-2025-3002 in ledger by 192666 EUR.",
+      "description": "Underallocated payment PAY-2025-3005 in ledger by 7950 GBP.",
       "before_state": {
-        "original_amount": 578000
+        "original_amount": 23850
       },
       "after_state": {
-        "allocated_amount": 385334
+        "allocated_amount": 15900
       }
     }
   ]

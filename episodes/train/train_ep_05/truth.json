@@ -5,17 +5,17 @@
       "issue_id": "ISSUE-0001",
       "type": "wrong_fx_or_date",
       "affected_ids": [
-        "INV-2025-1029",
-        "ROW-00121",
-        "ROW-00122"
+        "INV-2025-1057",
+        "ROW-00239",
+        "ROW-00240"
       ],
-      "expected_amount_minor": 38396,
+      "expected_amount_minor": 118989,
       "currency": "USD",
       "acceptable_evidence_sets": [
         [
-          "DOC-INV-00061",
-          "ROW-00121",
-          "ROW-00122"
+          "DOC-INV-00120",
+          "ROW-00239",
+          "ROW-00240"
         ]
       ]
     }
