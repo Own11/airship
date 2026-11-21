@@ -5,23 +5,29 @@ from fintech_rl.scoring.matcher import match_findings_to_truth, MatchResult
 
 def compute_metrics(tp: int, fp: int, fn: int) -> Tuple[float, float, float]:
     """
-    Computes Precision, Recall, and F1.
-    Edge cases:
-    - If truth is empty (FN=0) and findings empty (TP=0, FP=0) -> F1 = 1.0, P = 1.0, R = 1.0
-    - If truth is empty (FN=0) but agent submitted findings (FP > 0) -> F1 = 0.0, P = 0.0, R = 0.0
-    - If TP == 0 -> P = 0.0, R = 0.0, F1 = 0.0
+    Computes Precision, Recall, and F1 strictly per Hackathon Section 05:
+    - P = TP / (TP + FP), with zero denominator -> P = 0.0
+    - R = TP / (TP + FN), with zero denominator -> R = 0.0
+    - If truth and findings are empty (TP=0, FP=0, FN=0) -> F1 = 1.0, P = 0.0, R = 0.0
+    - If truth is empty but findings exist (TP=0, FN=0, FP>0) -> F1 = 0.0, P = 0.0, R = 0.0
     """
-    if tp == 0 and fp == 0 and fn == 0:
-        return 1.0, 1.0, 1.0
-    if tp == 0 and fn == 0 and fp > 0:
-        return 0.0, 0.0, 0.0
-    
+    # Знаменатели для Precision и Recall
     precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
     recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-    if precision + recall > 0:
-        f1 = (2 * precision * recall) / (precision + recall)
+
+    # Правила для F1:
+    if tp == 0 and fp == 0 and fn == 0:
+        # Эталон и выводы пусты: F1 = 1.0 (P и R при нулевом знаменателе равны 0.0)
+        f1 = 1.0
+    elif tp == 0 and fn == 0 and fp > 0:
+        # Эталон пуст, но выводы есть: F1 = 0.0
+        f1 = 0.0
+    elif (2 * tp + fp + fn) > 0:
+        # Стандартная формула: F1 = 2*TP / (2*TP + FP + FN)
+        f1 = (2.0 * tp) / (2 * tp + fp + fn)
     else:
         f1 = 0.0
+
     return precision, recall, f1
 
 

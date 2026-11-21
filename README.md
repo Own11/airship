@@ -33,15 +33,20 @@
 
 ---
 
-## 🚀 Быстрый старт
+## 🚀 Быстрый старт (Кроссплатформенный запуск)
+
+Среда поддерживает запуск на **любой операционной системе** (Linux, macOS, Windows) без изменения единой строчки кода.
 
 ### 1. Единая команда проверки (Регламент хакатона)
 Запуск полного цикла верификации (67 тестов + генерация 20 эпизодов + бенчмарк 4 политик + вывод диагностических таблиц):
-```bash
-./scripts/check.sh
-# или через make
-make check
-```
+
+| Операционная система / Окружение | Команда запуска |
+| :--- | :--- |
+| **Linux & macOS (Bash / zsh)** | `./scripts/check.sh` или `make check` |
+| **Windows (PowerShell)** | `powershell -ExecutionPolicy Bypass -File scripts\check.ps1` |
+| **Windows (CMD / Bat)** | `scripts\check.bat` |
+| **Универсально (через Python на любой ОС)** | `python scripts/cli.py check` или `python -m airship check` |
+| **Docker (изолированный контейнер без сети)** | `docker run --rm --network none airship:latest ./scripts/check.sh` |
 
 ### 2. Запуск в изолированном Docker-контейнере (без сети)
 ```bash
@@ -55,9 +60,9 @@ docker run --rm --network none airship:latest ./scripts/check.sh
 ### 3. Интерактивное пошаговое демо (п. 09 регламента)
 Визуализированная пошаговая демонстрация расследования эпизода агентом:
 ```bash
+python scripts/cli.py demo
+# или через make
 make demo
-# или напрямую
-python3 scripts/cli.py demo
 ```
 
 ---
@@ -188,8 +193,11 @@ print(f"Reward: {reward:.4f}, Metrics: {info['eval_metrics']}")
 ├── DESIGN.md               # Математический дизайн, спецификация и разбор сбоев
 ├── SUBMISSION.md           # Описание решения для жюри (100 / 100)
 ├── trajectories.jsonl      # Лог траекторий без закрытых эталонов
+├── .gitattributes          # Фиксация LF line endings для shell/Docker
 ├── scripts/
-│   ├── check.sh            # Единый скрипт официальной проверки с цветными бейджами
+│   ├── check.sh            # Единый скрипт проверки для Linux / macOS (pure LF)
+│   ├── check.bat           # Нативный скрипт проверки для Windows CMD
+│   ├── check.ps1           # Нативный скрипт проверки для Windows PowerShell
 │   ├── cli.py              # Автономный исполняемый CLI-раннер
 │   ├── make_episodes.py    # Генератор 10 train + 10 dev эпизодов
 │   ├── run_policies.py     # Запуск 4 политик и расчет метрик

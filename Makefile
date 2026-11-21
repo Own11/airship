@@ -8,6 +8,9 @@ GRAY   := \033[38;5;244m
 BOLD   := \033[1m
 RESET  := \033[0m
 
+# Cross-platform Python detection (macOS, Linux, Windows)
+PYTHON ?= $(shell command -v python3 2>/dev/null || command -v python 2>/dev/null || echo python3)
+
 help:
 	@echo ""
 	@echo "$(CYAN)$(BOLD)Airship FinTech RL Environment Commands:$(RESET)"
@@ -28,30 +31,28 @@ check:
 	@./scripts/check.sh
 
 test:
-	@PYTHONHASHSEED=0 python3 -m pytest tests -v
+	@PYTHONHASHSEED=0 $(PYTHON) -m pytest tests -v
 
 demo:
-	@PYTHONPATH=src python3 scripts/demo.py
+	@PYTHONPATH=src $(PYTHON) scripts/demo.py
 
 benchmark:
-	@PYTHONPATH=src python3 scripts/run_policies.py
+	@PYTHONPATH=src $(PYTHON) scripts/run_policies.py
 
 episodes:
-	@PYTHONPATH=src python3 scripts/make_episodes.py
+	@PYTHONPATH=src $(PYTHON) scripts/make_episodes.py
 
 inspect:
-	@PYTHONPATH=src python3 scripts/cli.py inspect train_ep_03 --table ledger --limit 10
+	@PYTHONPATH=src $(PYTHON) scripts/cli.py inspect train_ep_03 --table ledger --limit 10
 
 play:
-	@PYTHONPATH=src python3 scripts/cli.py play train_ep_03
+	@PYTHONPATH=src $(PYTHON) scripts/cli.py play train_ep_03
 
 cli:
-	@PYTHONPATH=src python3 scripts/cli.py
+	@PYTHONPATH=src $(PYTHON) scripts/cli.py
 
 clean:
-	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	@find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
-	@find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	@$(PYTHON) -c "import pathlib, shutil; [shutil.rmtree(p) for p in pathlib.Path('.').rglob('__pycache__')]; [shutil.rmtree(p) for p in pathlib.Path('.').rglob('.pytest_cache')]; [p.unlink() for p in pathlib.Path('.').rglob('*.pyc')]"
 
 docker-build:
 	docker build -t airship:latest .

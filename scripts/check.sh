@@ -22,20 +22,28 @@ echo ""
 # Set PYTHONHASHSEED for bit-exact reproducibility across platforms
 export PYTHONHASHSEED=0
 
+# Detect Python binary (python3 or python)
+PYTHON_BIN="python3"
+if ! command -v python3 >/dev/null 2>&1; then
+    if command -v python >/dev/null 2>&1; then
+        PYTHON_BIN="python"
+    fi
+fi
+
 # 1. Run pytest
 echo -e "${PURPLE}${BOLD}[1/3]${RESET} ${BOLD}Running pytest test suite (67 unit & contract tests)...${RESET}"
-python3 -m pytest tests -v
+$PYTHON_BIN -m pytest tests -v
 echo -e "${GREEN}✓ Pytest suite completed without errors.${RESET}"
 echo ""
 
 # 2. Generate 10 train + 10 dev episodes
 echo -e "${PURPLE}${BOLD}[2/3]${RESET} ${BOLD}Synthesizing train & dev benchmark episodes...${RESET}"
-PYTHONPATH=src python3 scripts/make_episodes.py
+PYTHONPATH=src $PYTHON_BIN scripts/make_episodes.py
 echo ""
 
 # 3. Run all 4 policies on all 20 episodes
 echo -e "${PURPLE}${BOLD}[3/3]${RESET} ${BOLD}Benchmarking 4 baseline policies on 20 episodes...${RESET}"
-PYTHONPATH=src python3 scripts/run_policies.py
+PYTHONPATH=src $PYTHON_BIN scripts/run_policies.py
 echo ""
 
 echo -e "${GREEN}${BOLD}================================================================${RESET}"

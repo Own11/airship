@@ -197,9 +197,9 @@ def test_clean_company_silence_vs_accusation():
 
 # 10. Empty truth edge case metrics
 def test_empty_truth_metrics():
-    # Empty truth + empty findings -> F1=1.0, P=1.0, R=1.0
+    # Empty truth + empty findings -> F1=1.0, P=0.0, R=0.0 (по регламенту)
     p1, r1, f1_1 = compute_metrics(0, 0, 0)
-    assert (p1, r1, f1_1) == (1.0, 1.0, 1.0)
+    assert (p1, r1, f1_1) == (0.0, 0.0, 1.0)
 
     # Empty truth + findings submitted -> F1=0.0, P=0.0, R=0.0
     p2, r2, f2_2 = compute_metrics(0, 1, 0)
